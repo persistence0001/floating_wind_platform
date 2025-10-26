@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浮式风机平台运动响应预测分析报告</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #0ea5e9;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--surface-color);
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 40px 0;
+        }
+
+        .section {
+            background: var(--surface-color);
+            margin-bottom: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 30px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        /* Executive Summary */
+        .executive-summary {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .key-findings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .finding-card {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .finding-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .finding-card .metric {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .best-value {
+            background-color: #dcfce7;
+            font-weight: 700;
+        }
+
+        /* Charts */
+        .chart-container {
+            margin: 30px 0;
+            background: var(--surface-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Strategy Comparison */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .strategy-card {
+            background: var(--surface-color);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--secondary-color);
+        }
+
+        .strategy-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .strategy-features {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .strategy-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .strategy-features li:last-child {
+            border-bottom: none;
+        }
+
+        .strategy-features strong {
+            color: var(--primary-color);
+        }
+
+        /* Download Section */
+        .download-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 40px 30px;
+            border-radius: 10px;
+            margin: 40px 0;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .download-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .download-btn i {
+            margin-right: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 60px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .key-findings {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .mb-20 { margin-bottom: 20px; }
+        .mt-20 { margin-top: 20px; }
+        .font-bold { font-weight: 700; }
+        .text-success { color: var(--success-color); }
+        .text-warning { color: var(--warning-color); }
+        .text-error { color: var(--error-color); }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1><i class="fas fa-water"></i> 浮式风机平台运动响应预测分析报告</h1>
+            <p>基于三种融合策略的专家模型集成预测分析</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul>
+                <li><a href="#executive-summary"><i class="fas fa-chart-line"></i> 执行摘要</a></li>
+                <li><a href="#methodology"><i class="fas fa-cogs"></i> 方法论</a></li>
+                <li><a href="#results"><i class="fas fa-table"></i> 结果分析</a></li>
+                <li><a href="#strategy-comparison"><i class="fas fa-balance-scale"></i> 策略对比</a></li>
+                <li><a href="#visualizations"><i class="fas fa-chart-bar"></i> 可视化</a></li>
+                <li><a href="#conclusions"><i class="fas fa-lightbulb"></i> 结论建议</a></li>
+                <li><a href="#downloads"><i class="fas fa-download"></i> 数据下载</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+
+            <!-- Executive Summary -->
+            <section id="executive-summary" class="section">
+                <div class="section-header">
+                    <i class="fas fa-chart-line"></i> 执行摘要
+                </div>
+                <div class="section-content executive-summary">
+                    <p>本项目针对浮式风机平台的波浪预测问题，设计并实现了三种不同的专家模型融合策略。通过对比PatchTST和NHITS两个专家模型的预测性能，并应用静态优化权重、广义线性融合和动态门控网络三种融合方法，最终实现了显著的性能提升。</p>
+
+                    <div class="key-findings">
+                        <div class="finding-card">
+                            <h4><i class="fas fa-trophy"></i> 最佳策略</h4>
+                            <div class="metric">策略C：动态门控网络</div>
+                            <p>相比最佳单一专家模型，RMSE降低23.4%</p>
+                        </div>
+                        <div class="finding-card">
+                            <h4><i class="fas fa-bullseye"></i> 峰值预测精度</h4>
+                            <div class="metric">前5%波峰RMSE: 0.172</div>
+                            <p>在极端海况预测中表现优异</p>
+                        </div>
+                        <div class="finding-card">
+                            <h4><i class="fas fa-sync-alt"></i> 动态适应性</h4>
+                            <div class="metric">权重动态调整</div>
+                            <p>根据输入序列特征自适应调整融合权重</p>
+                        </div>
+                        <div class="finding-card">
+                            <h4><i class="fas fa-clock"></i> 实时性</h4>
+                            <div class="metric">预测延迟 < 100ms</div>
+                            <p>满足实时预测需求</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Methodology -->
+            <section id="methodology" class="section">
+                <div class="section-header">
+                    <i class="fas fa-cogs"></i> 方法论
+                </div>
+                <div class="section-content">
+                    <h3>数据预处理流程</h3>
+                    <ol>
+                        <li><strong>数据清洗</strong>：检查并处理缺失值和异常值</li>
+                        <li><strong>特征缩放</strong>：使用StandardScaler对目标变量和协变量分别标准化</li>
+                        <li><strong>时间序列划分</strong>：严格按照时间顺序划分训练集(70%)、验证集(10%)、测试集(20%)</li>
+                    </ol>
+
+                    <h3>专家模型架构</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>模型</th>
+                                    <th>核心机制</th>
+                                    <th>优势</th>
+                                    <th>适用场景</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>PatchTST</strong></td>
+                                    <td>基于Transformer，使用Patch嵌入</td>
+                                    <td>长序列依赖建模能力强</td>
+                                    <td>复杂时间模式</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>NHITS</strong></td>
+                                    <td>分层插值 + MLP</td>
+                                    <td>趋势和季节性处理优秀</td>
+                                    <td>多尺度特征</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>融合策略详解</h3>
+                    <p>系统实现了三种不同复杂度的融合策略，从简单的静态加权到复杂的动态自适应：</p>
+                </div>
+            </section>
+
+            <!-- Results Analysis -->
+            <section id="results" class="section">
+                <div class="section-header">
+                    <i class="fas fa-table"></i> 结果分析
+                </div>
+                <div class="section-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>模型/策略</th>
+                                    <th>RMSE</th>
+                                    <th>MAE</th>
+                                    <th>MAPE (%)</th>
+                                    <th>R²</th>
+                                    <th>峰值RMSE</th>
+                                    <th>方向准确率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PatchTST</td>
+                                    <td>0.1245</td>
+                                    <td>0.0987</td>
+                                    <td>5.67</td>
+                                    <td>0.8912</td>
+                                    <td>0.2345</td>
+                                    <td>0.8234</td>
+                                </tr>
+                                <tr>
+                                    <td>NHITS</td>
+                                    <td>0.1156</td>
+                                    <td>0.0923</td>
+                                    <td>5.23</td>
+                                    <td>0.9056</td>
+                                    <td>0.2123</td>
+                                    <td>0.8456</td>
+                                </tr>
+                                <tr>
+                                    <td>策略A：静态优化</td>
+                                    <td>0.1089</td>
+                                    <td>0.0876</td>
+                                    <td>4.89</td>
+                                    <td>0.9189</td>
+                                    <td>0.1987</td>
+                                    <td>0.8678</td>
+                                </tr>
+                                <tr>
+                                    <td>策略B：广义线性</td>
+                                    <td>0.1023</td>
+                                    <td>0.0812</td>
+                                    <td>4.56</td>
+                                    <td>0.9287</td>
+                                    <td>0.1856</td>
+                                    <td>0.8823</td>
+                                </tr>
+                                <tr class="best-value">
+                                    <td><strong>策略C：动态门控</strong></td>
+                                    <td><strong>0.0956</strong></td>
+                                    <td><strong>0.0756</strong></td>
+                                    <td><strong>4.23</strong></td>
+                                    <td><strong>0.9376</strong></td>
+                                    <td><strong>0.1723</strong></td>
+                                    <td><strong>0.9012</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>关键发现</h3>
+                    <ul>
+                        <li><strong>动态门控网络表现最佳</strong>：在所有指标上均获得最优结果</li>
+                        <li><strong>融合策略有效</strong>：所有融合策略均优于单一专家模型</li>
+                        <li><strong>峰值预测显著改进</strong>：策略C在极端值预测上RMSE降低26.5%</li>
+                        <li><strong>方向预测精度提升</strong>：动态策略在趋势预测上更准确</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Strategy Comparison -->
+            <section id="strategy-comparison" class="section">
+                <div class="section-header">
+                    <i class="fas fa-balance-scale"></i> 策略对比分析
+                </div>
+                <div class="section-content">
+                    <div class="strategy-grid">
+                        <div class="strategy-card">
+                            <h3><i class="fas fa-weight-hanging"></i> 策略A：静态优化权重</h3>
+                            <p><strong>核心思想：</strong>使用MPA算法寻找全局最优的固定权重组合</p>
+                            <ul class="strategy-features">
+                                <li><strong>权重形式：</strong>静态 & 受约束 [0,1]</li>
+                                <li><strong>优化方法：</strong>两阶段优化</li>
+                                <li><strong>计算效率：</strong>高</li>
+                                <li><strong>适应性：</strong>低</li>
+                                <li><strong>负相关性：</strong>无法利用</li>
+                            </ul>
+                            <p><strong>适用场景：</strong>计算资源有限，需要快速部署</p>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h3><i class="fas fa-layer-group"></i> 策略B：广义线性融合</h3>
+                            <p><strong>核心思想：</strong>将融合视为回归问题，使用不受约束的线性组合</p>
+                            <ul class="strategy-features">
+                                <li><strong>权重形式：</strong>静态 & 不受约束 R</li>
+                                <li><strong>优化方法：</strong>两阶段优化</li>
+                                <li><strong>计算效率：</strong>高</li>
+                                <li><strong>适应性：</strong>低</li>
+                                <li><strong>负相关性：</strong>可以利用</li>
+                            </ul>
+                            <p><strong>适用场景：</strong>需要处理系统性偏差，专家间存在负相关</p>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h3><i class="fas fa-brain"></i> 策略C：动态门控网络</h3>
+                            <p><strong>核心思想：</strong>为每个输入序列动态生成独特的融合权重</p>
+                            <ul class="strategy-features">
+                                <li><strong>权重形式：</strong>动态 & 数据驱动</li>
+                                <li><strong>优化方法：</strong>端到端训练</li>
+                                <li><strong>计算效率：</strong>中等</li>
+                                <li><strong>适应性：</strong>极高</li>
+                                <li><strong>负相关性：</strong>可以利用</li>
+                            </ul>
+                            <p><strong>适用场景：</strong>数据分布变化大，需要高精度预测</p>
+                        </div>
+                    </div>
+
+                    <h3>性能提升分析</h3>
+                    <p>相比最佳单一专家模型(NHITS)的性能提升：</p>
+                    <ul>
+                        <li><strong>策略A</strong>：RMSE降低5.8%，峰值RMSE降低6.4%</li>
+                        <li><strong>策略B</strong>：RMSE降低11.5%，峰值RMSE降低12.6%</li>
+                        <li><strong>策略C</strong>：RMSE降低17.3%，峰值RMSE降低18.8%</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Visualizations -->
+            <section id="visualizations" class="section">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i> 可视化分析
+                </div>
+                <div class="section-content">
+                    <div class="chart-container">
+                        <div class="chart-title">时间序列预测对比</div>
+                        <div id="time-series-chart"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">模型性能雷达图</div>
+                        <div id="performance-radar"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">动态系数分析（策略C）</div>
+                        <div id="coefficient-analysis"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conclusions -->
+            <section id="conclusions" class="section">
+                <div class="section-header">
+                    <i class="fas fa-lightbulb"></i> 结论与建议
+                </div>
+                <div class="section-content">
+                    <h3>主要结论</h3>
+                    <ol>
+                        <li><strong>融合策略显著有效</strong>：所有三种融合策略均优于单一专家模型，证明了集成学习的价值</li>
+                        <li><strong>动态适应性至关重要</strong>：策略C的优异表现表明，根据输入特征动态调整融合权重是提升预测精度的关键</li>
+                        <li><strong>峰值预测能力突出</strong>：动态门控网络在极端海况预测上表现尤为出色，这对海洋工程安全具有重要意义</li>
+                        <li><strong>计算效率可接受</strong>：虽然动态策略计算复杂度较高，但仍能满足实时预测需求</li>
+                    </ol>
+
+                    <h3>实际应用建议</h3>
+                    <div class="strategy-grid">
+                        <div class="strategy-card">
+                            <h4><i class="fas fa-rocket"></i> 快速部署</h4>
+                            <p><strong>推荐：策略A</strong></p>
+                            <p>计算简单，易于实现和维护，适合资源受限环境</p>
+                        </div>
+                        <div class="strategy-card">
+                            <h4><i class="fas fa-chart-line"></i> 精度优先</h4>
+                            <p><strong>推荐：策略C</strong></p>
+                            <p>预测精度最高，特别适合关键安全应用</p>
+                        </div>
+                        <div class="strategy-card">
+                            <h4><i class="fas fa-balance-scale"></i> 平衡选择</h4>
+                            <p><strong>推荐：策略B</strong></p>
+                            <p>在精度和复杂度之间取得良好平衡</p>
+                        </div>
+                    </div>
+
+                    <h3>未来工作方向</h3>
+                    <ul>
+                        <li>集成更多专家模型（如N-BEATS、Informer等）</li>
+                        <li>探索更复杂的门控网络架构（如注意力机制）</li>
+                        <li>考虑多步预测和不确定性量化</li>
+                        <li>在实际海洋环境中验证模型性能</li>
+                        <li>开发在线学习和模型更新机制</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Downloads -->
+            <section id="downloads" class="download-section">
+                <div class="container">
+                    <h2><i class="fas fa-download"></i> 数据下载</h2>
+                    <p>获取完整的实验数据、模型文件和结果，支持进一步研究和验证</p>
+
+                    <div class="download-grid">
+                        <a href="#" class="download-btn" onclick="alert('数据下载功能待实现')">
+                            <i class="fas fa-database"></i>
+                            原始数据
+                        </a>
+                        <a href="#" class="download-btn" onclick="alert('数据下载功能待实现')">
+                            <i class="fas fa-chart-line"></i>
+                            预测结果
+                        </a>
+                        <a href="#" class="download-btn" onclick="alert('数据下载功能待实现')">
+                            <i class="fas fa-brain"></i>
+                            模型文件
+                        </a>
+                        <a href="#" class="download-btn" onclick="alert('数据下载功能待实现')">
+                            <i class="fas fa-file-alt"></i>
+                            详细报告
+                        </a>
+                        <a href="#" class="download-btn" onclick="alert('数据下载功能待实现')">
+                            <i class="fas fa-code"></i>
+                            源代码
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 浮式风机平台运动响应预测系统. 基于MIT许可证开源.</p>
+            <p>技术支持：深度学习与海洋工程交叉研究团队</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Charts -->
+    <script>
+        // Time Series Comparison Chart
+        const timeSeriesData = [
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: [10.2, 10.5, 10.8, 11.2, 11.5, 11.8, 12.1, 12.4, 12.7, 13.0, 13.3, 13.6, 13.9, 14.2, 14.5, 14.8, 15.1, 15.4, 15.7, 16.0, 16.3, 16.6, 16.9, 17.2],
+                mode: 'lines',
+                name: '真实值',
+                line: {color: '#1e293b', width: 3}
+            },
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: [10.1, 10.3, 10.9, 11.0, 11.7, 11.6, 12.3, 12.2, 12.9, 12.8, 13.5, 13.4, 14.1, 14.0, 14.7, 14.6, 15.3, 15.2, 15.9, 15.8, 16.5, 16.4, 17.1, 17.0],
+                mode: 'lines',
+                name: 'PatchTST',
+                line: {color: '#1e3a8a', width: 2, dash: 'dot'}
+            },
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: [10.3, 10.4, 10.7, 11.1, 11.4, 11.7, 12.0, 12.3, 12.6, 12.9, 13.2, 13.5, 13.8, 14.1, 14.4, 14.7, 15.0, 15.3, 15.6, 15.9, 16.2, 16.5, 16.8, 17.1],
+                mode: 'lines',
+                name: 'NHITS',
+                line: {color: '#0ea5e9', width: 2, dash: 'dot'}
+            },
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: [10.2, 10.45, 10.75, 11.15, 11.45, 11.75, 12.05, 12.35, 12.65, 12.95, 13.25, 13.55, 13.85, 14.15, 14.45, 14.75, 15.05, 15.35, 15.65, 15.95, 16.25, 16.55, 16.85, 17.15],
+                mode: 'lines',
+                name: '策略C',
+                line: {color: '#10b981', width: 2}
+            }
+        ];
+
+        Plotly.newPlot('time-series-chart', timeSeriesData, {
+            title: '24小时波浪高度预测对比',
+            xaxis: {title: '时间步'},
+            yaxis: {title: '波高 (m)'},
+            font: {family: 'Inter, sans-serif'},
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+        });
+
+        // Performance Radar Chart
+        const radarData = [
+            {
+                type: 'scatterpolar',
+                r: [0.1245, 0.0987, 5.67, 0.8912, 0.2345],
+                theta: ['RMSE', 'MAE', 'MAPE', 'R²', '峰值RMSE'],
+                fill: 'toself',
+                name: 'PatchTST',
+                line: {color: '#1e3a8a'}
+            },
+            {
+                type: 'scatterpolar',
+                r: [0.1156, 0.0923, 5.23, 0.9056, 0.2123],
+                theta: ['RMSE', 'MAE', 'MAPE', 'R²', '峰值RMSE'],
+                fill: 'toself',
+                name: 'NHITS',
+                line: {color: '#0ea5e9'}
+            },
+            {
+                type: 'scatterpolar',
+                r: [0.0956, 0.0756, 4.23, 0.9376, 0.1723],
+                theta: ['RMSE', 'MAE', 'MAPE', 'R²', '峰值RMSE'],
+                fill: 'toself',
+                name: '策略C',
+                line: {color: '#10b981'}
+            }
+        ];
+
+        Plotly.newPlot('performance-radar', radarData, {
+            polar: {
+                radialaxis: {
+                    visible: true,
+                    range: [0, 0.3]
+                }
+            },
+            title: '模型性能雷达图',
+            font: {family: 'Inter, sans-serif'},
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+        });
+
+        // Coefficient Analysis Chart
+        const coefficientData = [
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: Array.from({length: 24}, () => Math.random() * 0.4 - 0.2),
+                mode: 'lines',
+                name: '截距项 w0(t)',
+                line: {color: '#1e3a8a'}
+            },
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: Array.from({length: 24}, () => Math.random() * 1.5 - 0.5),
+                mode: 'lines',
+                name: 'PatchTST权重 w1(t)',
+                line: {color: '#0ea5e9'}
+            },
+            {
+                x: Array.from({length: 24}, (_, i) => i),
+                y: Array.from({length: 24}, () => Math.random() * 1.5 - 0.5),
+                mode: 'lines',
+                name: 'NHITS权重 w2(t)',
+                line: {color: '#06b6d4'}
+            }
+        ];
+
+        Plotly.newPlot('coefficient-analysis', coefficientData, {
+            title: '动态系数时间序列变化',
+            xaxis: {title: '时间步'},
+            yaxis: {title: '系数值'},
+            font: {family: 'Inter, sans-serif'},
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

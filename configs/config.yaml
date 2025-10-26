@@ -1,0 +1,72 @@
+# 浮式风机平台运动响应预测项目配置文件
+
+# 数据配置
+data:
+  file_path: "data/浮式风机平台.xlsx"
+  target_variable: "Wave1Elev"
+  covariates: ["纵荡", "横荡", "垂荡", "横摇", "纵摇", "艏摇"]
+  input_size: 96  # 输入序列长度 (24小时 * 4个采样点/小时)
+  horizon: 24     # 预测 horizon (6小时 * 4个采样点/小时)
+  train_ratio: 0.7
+  val_ratio: 0.1
+  test_ratio: 0.2
+
+# 模型配置
+models:
+  patchtst:
+    patch_len: 16
+    stride: 8
+    num_layers: 3
+    n_heads: 8
+    d_model: 128
+    d_ff: 256
+    dropout: 0.2
+    head_dropout: 0.2
+
+  nhits:
+    num_stacks: 3
+    num_blocks: [1, 1, 1]
+    num_layers: [2, 2, 2]
+    pooling_sizes: [8, 4, 1]
+    n_freq_downsample: [4, 2, 1]
+    dropout: 0.2
+
+  gating_network:
+    hidden_size: 64
+    num_layers: 2
+    dropout: 0.2
+
+# 训练配置
+training:
+  batch_size: 32
+  num_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 1e-5
+  patience: 15
+  min_delta: 1e-6
+
+# 超参数优化
+optimization:
+  n_trials: 50
+  timeout: 3600
+
+# MPA优化器配置
+mpa:
+  population_size: 30
+  max_iterations: 100
+  fads_probability: 0.2
+  convergence_threshold: 1e-6
+
+# 评估指标
+evaluation:
+  metrics: ["MAE", "MAPE", "RMSE", "R2"]
+  calculate_peak_error: true
+  peak_percentage: 0.05  # 前5%最大波峰
+
+# 输出配置
+output:
+  save_models: true
+  save_predictions: true
+  save_weights: true
+  plot_results: true
+  results_dir: "results"
