@@ -14,6 +14,7 @@ import joblib
 from datetime import datetime
 from pathlib import Path
 import warnings
+from typing import Optional
 from torch.utils.data import DataLoader as TorchDataLoader, TensorDataset
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -28,7 +29,7 @@ sys.path.append(str(project_root))
 from src.data_preprocessing.data_loader import DataLoader
 from models.patchtst import PatchTST, PatchTSTTrainer
 from models.nhits import NHITS, NHITSTrainer
-from src.strategies.mpa_optimizer import StaticWeightOptimizer, StackingOptimizer
+from src.strategies.mpa_optimizer import MPAOptimizer,StackingOptimizer
 from src.strategies.gating_network import DynamicFusionModel, DynamicFusionTrainer, GatingNetwork
 from src.evaluation.metrics import EvaluationMetrics, ModelComparison
 from src.utils.hyperparameter_optimization import HyperparameterOptimizer
@@ -159,9 +160,27 @@ class FloatingWindPlatformExperiment:
             shuffle=shuffle
         )
 
-    def train_expert_models(self, use_optimized_params: bool = True):
-        """训练专家模型"""
+    def train_expert_models(self, use_optimized_params: bool = True,
+                            quick_mode: bool = False,
+                            quick_epochs: Optional[int] = None):
+
+        """训练专家模型
+
+        Args:
+            use_optimized_params: 是否使用优化的超参数
+            quick_mode: 是否启用快速模式
+            quick_epochs: 快速模式下的epoch数（如果为None则使用配置值）
+        """
         logger.info("开始训练专家模型...")
+
+
+        # 确定epoch数
+        if quick_mode and quick_epochs is not None:
+            num_epochs = quick_epochs
+        else:
+            num_epochs = self.config['training']['num_epochs']
+
+
 
         n_samples, input_size, num_features = self.X_train.shape
         _, horizon = self.y_train.shape
@@ -204,7 +223,7 @@ class FloatingWindPlatformExperiment:
         patchtst_trainer.train_model(
             train_loader,
             val_loader,
-            num_epochs=self.config['training']['num_epochs'],
+            num_epochs=num_epochs,  # 使用变量而不是配置
             patience=self.config['training']['patience']
         )
 
@@ -217,7 +236,7 @@ class FloatingWindPlatformExperiment:
         nhits_trainer.train_model(
             train_loader,
             val_loader,
-            num_epochs=self.config['training']['num_epochs'],
+            num_epochs=num_epochs,  # 使用变量而不是配置
             patience=self.config['training']['patience']
         )
 
@@ -304,7 +323,7 @@ class FloatingWindPlatformExperiment:
 
         # 使用MPA优化权重
         mpa_config = self.config['mpa']
-        optimizer = StaticWeightOptimizer(mpa_config)
+        optimizer = MPAOptimizer.StaticWeightOptimizer(mpa_config)
 
         optimal_weights, best_score = optimizer.optimize_weights(
             val_expert_preds_combined, self.y_val
@@ -713,6 +732,129 @@ class FloatingWindPlatformExperiment:
             plt.tight_layout()
             plt.savefig(f"{self.visualization_dir}/dynamic_coefficients_example_{idx}.png")
             plt.close()
+
+        def implement_strategy_a_quick(self, max_iterations: int = 20):
+            """实现策略A的快速模式：静态优化权重（减少MPA迭代次数）"""
+        logger.info(f"实现策略A快速模式：静态优化权重（max_iterations={max_iterations}）...")
+
+        # 准备数据
+        patchtst_pred = self.expert_predictions['patchtst']
+        nhits_pred = self.expert_predictions['nhits']
+
+        # 合并预测 [n_samples, horizon, n_experts]
+        expert_preds_combined = np.stack([patchtst_pred, nhits_pred], axis=2)
+
+        # 使用验证集来优化权重
+        val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
+
+        val_predictions = {}
+        for name, expert_data in self.expert_models.items():
+            trainer = expert_data['trainer']
+            predictions = trainer.predict(val_loader)
+            val_predictions[name] = predictions
+
+        val_expert_preds_combined = np.stack([val_predictions['patchtst'], val_predictions['nhits']], axis=2)
+
+        # 使用MPA优化权重（快速模式，减少迭代次数）
+        mpa_config = self.config['mpa'].copy()
+        mpa_config['max_iterations'] = max_iterations  # 使用快速模式的迭代次数
+
+        optimizer = StaticWeightOptimizer(mpa_config)
+
+        optimal_weights, best_score = optimizer.optimize_weights(
+            val_expert_preds_combined, self.y_val
+        )
+
+        # 在测试集上应用权重
+        strategy_a_predictions = np.zeros_like(self.y_test)
+        for i, weight in enumerate(optimal_weights):
+            strategy_a_predictions += weight * expert_preds_combined[:, :, i]
+
+        # 反标准化预测结果
+        strategy_a_predictions_original = self._inverse_transform_predictions(strategy_a_predictions)
+
+        # 保存结果
+        self.strategy_a_results = {
+            'predictions': strategy_a_predictions,
+            'predictions_original': strategy_a_predictions_original,
+            'weights': optimal_weights,
+            'validation_score': best_score
+        }
+
+        np.save(f"{self.results_dir}/strategy_a_predictions_scaled.npy", strategy_a_predictions)
+        np.save(f"{self.results_dir}/strategy_a_predictions_original.npy", strategy_a_predictions_original)
+        np.save(f"{self.results_dir}/strategy_a_weights.npy", optimal_weights)
+
+        logger.info(f"策略A快速模式完成 - 最优权重: {optimal_weights}, 验证集RMSE: {best_score:.6f}")
+
+        return self.strategy_a_results
+
+        def implement_strategy_b_quick(self, max_iterations: int = 20):
+            """实现策略B的快速模式：广义线性融合（减少MPA迭代次数）"""
+            logger.info(f"实现策略B快速模式：广义线性融合（max_iterations={max_iterations}）...")
+
+            # 准备数据
+            patchtst_pred = self.expert_predictions['patchtst']
+            nhits_pred = self.expert_predictions['nhits']
+
+            # 合并预测 [n_samples, horizon, n_experts]
+            expert_preds_combined = np.stack([patchtst_pred, nhits_pred], axis=2)
+
+            # 使用验证集来优化系数
+            val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
+
+            val_predictions = {}
+            for name, expert_data in self.expert_models.items():
+                trainer = expert_data['trainer']
+                predictions = trainer.predict(val_loader)
+                val_predictions[name] = predictions
+
+            val_expert_preds_combined = np.stack([val_predictions['patchtst'], val_predictions['nhits']], axis=2)
+
+            # 使用MPA优化系数（快速模式，减少迭代次数）
+            mpa_config = self.config['mpa'].copy()
+            mpa_config['max_iterations'] = max_iterations  # 使用快速模式的迭代次数
+
+            optimizer = StackingOptimizer(mpa_config)
+
+            optimal_coefficients, best_score = optimizer.optimize_coefficients(
+                val_expert_preds_combined, self.y_val
+            )
+
+            # 在测试集上应用系数
+            # 系数包括截距项和权重
+            w0 = optimal_coefficients[0]
+            weights = optimal_coefficients[1:]
+
+            strategy_b_predictions = np.full_like(self.y_test, w0)
+            for i, weight in enumerate(weights):
+                strategy_b_predictions += weight * expert_preds_combined[:, :, i]
+
+            # 反标准化预测结果
+            strategy_b_predictions_original = self._inverse_transform_predictions(strategy_b_predictions)
+
+            # 保存结果
+            self.strategy_b_results = {
+                'predictions': strategy_b_predictions,
+                'predictions_original': strategy_b_predictions_original,
+                'coefficients': optimal_coefficients,
+                'validation_score': best_score
+            }
+
+            np.save(f"{self.results_dir}/strategy_b_predictions_scaled.npy", strategy_b_predictions)
+            np.save(f"{self.results_dir}/strategy_b_predictions_original.npy", strategy_b_predictions_original)
+            np.save(f"{self.results_dir}/strategy_b_coefficients.npy", optimal_coefficients)
+
+            logger.info(f"策略B快速模式完成 - 最优系数: {optimal_coefficients}, 验证集RMSE: {best_score:.6f}")
+
+            return self.strategy_b_results
+
+
+
+
+
+
+
 
     def run_complete_experiment(self, optimize_hyperparameters: bool = True):
         """运行完整实验流程"""

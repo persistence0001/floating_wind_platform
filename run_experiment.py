@@ -111,30 +111,26 @@ def main():
             logger.info("步骤1: 加载真实数据...")
             experiment.load_and_preprocess_data()
             print("✓ 真实数据加载成功")
-            
-            # 使用默认参数快速训练模型（减少epoch）
+
+            # 使用参数传递方式训练模型（100个epoch）
             logger.info("步骤2: 快速训练模型...")
-            original_epochs = experiment.config['training']['num_epochs']
-            experiment.config['training']['num_epochs'] = 5  # 快速模式只训练5个epoch
-            
-            experiment.train_expert_models(use_optimized_params=False)
-            experiment.get_expert_predictions()
+            experiment.train_expert_models(
+                use_optimized_params=False,
+                quick_mode=True,
+                quick_epochs=100
+            )
             print("✓ 模型训练完成")
             
             # 快速运行融合策略（减少MPA迭代）
             logger.info("步骤3: 快速运行融合策略...")
-            original_mpa_iterations = experiment.config['mpa']['max_iterations']
-            experiment.config['mpa']['max_iterations'] = 20  # 快速模式只迭代20次
-            experiment.config['mpa']['max_iterations'] = experiment.config['mpa'].get('quick_iterations', 20)
-            #跑“完整”实验
-           # max_iter = self.config['mpa']['max_iterations']
-            
-            experiment.implement_strategy_a()
-            experiment.implement_strategy_b()
+            quick_config = {
+                'epochs': 100,
+                'mpa_iterations': experiment.config['mpa'].get('quick_iterations', 20)
+            }
             
             # 恢复原始配置
-            experiment.config['training']['num_epochs'] = original_epochs
-            experiment.config['mpa']['max_iterations'] = original_mpa_iterations
+            experiment.implement_strategy_a_quick(max_iterations=quick_config['mpa_iterations'])
+            experiment.implement_strategy_b_quick(max_iterations=quick_config['mpa_iterations'])
             
             logger.info("快速验证模式完成！")
             print("✓ 融合策略运行完成")

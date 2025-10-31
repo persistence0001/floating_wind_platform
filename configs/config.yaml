@@ -67,7 +67,7 @@ optimization:
 # 6. MPA优化器配置
 mpa:
   population_size: 30
-  max_iterations: 100
+  max_iterations: 100 #当运行完整实验（非快速模式）时，算法会进行最多100次迭代来寻找最优权重组合
   quick_iterations: 20
   fads_probability: 0.2
   convergence_threshold: 1e-6
