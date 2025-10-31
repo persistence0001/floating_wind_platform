@@ -24,36 +24,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def create_sample_results():
-    """创建示例结果数据"""
-    import numpy as np
-
-    # 创建示例数据
-    n_samples = 100
-    horizon = 24
-
-    # 真实值
-    y_true = np.random.randn(n_samples, horizon) * 2 + 10
-
-    # 各模型预测
-    predictions = {
-        'PatchTST': y_true + np.random.randn(n_samples, horizon) * 0.5,
-        'NHITS': y_true + np.random.randn(n_samples, horizon) * 0.4,
-        'Strategy_A_Static': y_true + np.random.randn(n_samples, horizon) * 0.35,
-        'Strategy_B_Stacking': y_true + np.random.randn(n_samples, horizon) * 0.3,
-        'Strategy_C_Dynamic': y_true + np.random.randn(n_samples, horizon) * 0.25
-    }
-
-    # 计算评估指标
-    metrics = {}
-    for name, pred in predictions.items():
-        metrics[name] = EvaluationMetrics.calculate_all_metrics(y_true, pred)
-
-    # 创建动态系数示例
-    coefficients = np.random.randn(n_samples, horizon, 3) * 0.5
-
-    return y_true, predictions, metrics, coefficients
-
 
 def generate_html_report(y_true, predictions, metrics, coefficients):
     """生成HTML报告"""
@@ -191,9 +161,7 @@ def create_readme(deploy_dir):
 - Safari 13+
 - Edge 80+
 
-## 许可证
 
-MIT License
 
 ---
 *部署时间：{deployment_time}*

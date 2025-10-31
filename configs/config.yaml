@@ -57,11 +57,6 @@ training:
   patience: 15
   min_delta: 1e-6
 
-  #MPA 迭代次数可配置化
-mpa:
-  max_iterations: 100
-  quick_iterations: 20
-
 # 5. 超参数优化配置（含配置二.py的独有参数）
 optimization:
   n_trials: 50
@@ -73,6 +68,7 @@ optimization:
 mpa:
   population_size: 30
   max_iterations: 100
+  quick_iterations: 20
   fads_probability: 0.2
   convergence_threshold: 1e-6
 

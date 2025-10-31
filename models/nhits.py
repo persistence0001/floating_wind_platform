@@ -496,38 +496,3 @@ def main():
     print("\n✅ NHITS模型模块框架验证完成！")
 
 
-if __name__ == "__main__":
-    main()
-
-
-def main():
-    """测试NHITS模型"""
-    import numpy as np
-
-    # 设置随机种子
-    torch.manual_seed(42)
-    np.random.seed(42)
-
-    # 创建测试数据
-    batch_size = 32
-    input_size = 96
-    horizon = 24
-    num_features = 7
-
-    X = torch.randn(batch_size, input_size, num_features)
-    y = torch.randn(batch_size, horizon)
-
-    # 创建模型
-    model = NHITS(
-        input_size=input_size,
-        horizon=horizon,
-        num_stacks=3,
-        num_blocks=[1, 1, 1],
-        num_layers=[2, 2, 2],
-        mlp_units=[512, 512],
-        pooling_sizes=[8, 4, 1],
-        n_freq_downsample=[4, 2, 1],
-        dropout=0.1,
-        num_features=num_features
-    )
-

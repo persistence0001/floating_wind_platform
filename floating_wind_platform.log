@@ -1121,3 +1121,51 @@ dtype: int64
 2025-10-31 15:55:19,327 - src.strategies.mpa_optimizer - INFO - 迭代 0: 最优适应度 = inf
 2025-10-31 15:55:19,335 - src.strategies.mpa_optimizer - INFO - 迭代 10: 最优适应度 = 0.251383
 2025-10-31 15:55:19,337 - __main__ - ERROR - 实验失败: '<' not supported between instances of 'numpy.ndarray' and 'str'
+2025-10-31 19:05:44,502 - __main__ - INFO - 初始化实验...
+2025-10-31 19:05:44,512 - main - INFO - 使用设备: cuda
+2025-10-31 19:05:44,515 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-10-31 19:05:44,515 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-10-31 19:05:44,515 - main - INFO - 开始数据加载和预处理...
+2025-10-31 19:05:44,524 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-10-31 19:05:46,705 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-10-31 19:05:46,708 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-10-31 19:05:46,711 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-10-31 19:05:46,713 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-10-31 19:05:46,719 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-10-31 19:05:46,719 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-10-31 19:05:46,794 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-10-31 19:05:46,794 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-10-31 19:05:46,794 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-10-31 19:05:46,795 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-10-31 19:05:46,795 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-10-31 19:05:46,859 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-10-31 19:05:46,859 - main - INFO - 数据预处理完成:
+2025-10-31 19:05:46,859 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-10-31 19:05:46,859 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-10-31 19:05:46,859 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-10-31 19:05:46,859 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-10-31 19:05:46,861 - main - INFO - 开始训练专家模型...
+2025-10-31 19:05:46,861 - main - INFO - 创建PatchTST模型...
+2025-10-31 19:05:46,906 - main - INFO - 创建NHITS模型...
+2025-10-31 19:05:46,981 - main - INFO - 训练PatchTST...
+2025-10-31 19:05:58,371 - models.patchtst - INFO - Epoch   1 | train_loss=0.927905 | val_loss=1.327706
+2025-10-31 19:06:06,209 - models.patchtst - INFO - Epoch   2 | train_loss=0.924078 | val_loss=1.327847
+2025-10-31 19:06:13,263 - models.patchtst - INFO - Epoch   3 | train_loss=0.923897 | val_loss=1.327648
+2025-10-31 19:06:20,409 - models.patchtst - INFO - Epoch   4 | train_loss=0.924024 | val_loss=1.327782
+2025-10-31 19:06:27,701 - models.patchtst - INFO - Epoch   5 | train_loss=0.923970 | val_loss=1.327686
+2025-10-31 19:06:27,701 - main - INFO - 训练NHITS...
+2025-10-31 19:06:35,681 - models.nhits - INFO - Epoch   1 | train_loss=270561872.983907 | val_loss=467.550551
+2025-10-31 19:06:43,592 - models.nhits - INFO - Epoch   2 | train_loss=106.032330 | val_loss=1.256432
+2025-10-31 19:06:51,445 - models.nhits - INFO - Epoch   3 | train_loss=1.016784 | val_loss=0.235574
+2025-10-31 19:06:59,376 - models.nhits - INFO - Epoch   4 | train_loss=0.143393 | val_loss=0.065247
+2025-10-31 19:07:07,249 - models.nhits - INFO - Epoch   5 | train_loss=0.045890 | val_loss=0.052084
+2025-10-31 19:07:07,265 - models.patchtst - INFO - 模型已保存到: results\experiment_20251031_190544/patchtst_model.pth
+2025-10-31 19:07:07,292 - models.nhits - INFO - 模型已保存到: results\experiment_20251031_190544/nhits_model.pth
+2025-10-31 19:07:07,292 - main - INFO - 专家模型训练完成
+2025-10-31 19:07:07,295 - main - INFO - 获取专家模型预测...
+2025-10-31 19:07:19,718 - main - INFO - 专家预测获取完成
+2025-10-31 19:07:19,719 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-10-31 19:07:19,719 - main - INFO - 实现策略A：静态优化权重...
+2025-10-31 19:07:20,339 - src.strategies.mpa_optimizer - INFO - 迭代 0: 最优适应度 = inf
+2025-10-31 19:07:20,347 - src.strategies.mpa_optimizer - INFO - 迭代 10: 最优适应度 = inf
+2025-10-31 19:07:20,347 - __main__ - ERROR - 实验失败: '<' not supported between instances of 'numpy.ndarray' and 'str'
