@@ -14,6 +14,10 @@ import joblib
 from datetime import datetime
 from pathlib import Path
 import warnings
+from torch.utils.data import DataLoader as TorchDataLoader, TensorDataset
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_absolute_percentage_error
 
 warnings.filterwarnings('ignore')
 
@@ -22,8 +26,8 @@ project_root = Path(__file__).parent
 sys.path.append(str(project_root))
 
 from src.data_preprocessing.data_loader import DataLoader
-from src.models.patchtst import PatchTST, PatchTSTTrainer
-from src.models.nhits import NHITS, NHITSTrainer
+from models.patchtst import PatchTST, PatchTSTTrainer
+from models.nhits import NHITS, NHITSTrainer
 from src.strategies.mpa_optimizer import StaticWeightOptimizer, StackingOptimizer
 from src.strategies.gating_network import DynamicFusionModel, DynamicFusionTrainer, GatingNetwork
 from src.evaluation.metrics import EvaluationMetrics, ModelComparison
@@ -60,13 +64,20 @@ class FloatingWindPlatformExperiment:
 
         # 创建输出目录
         self.results_dir = self.config['output']['results_dir']
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.results_dir = os.path.join(self.results_dir, f"experiment_{timestamp}")
         os.makedirs(self.results_dir, exist_ok=True)
+
+        # 创建可视化目录
+        self.visualization_dir = os.path.join(self.results_dir, 'visualizations')
+        os.makedirs(self.visualization_dir, exist_ok=True)
 
         # 初始化组件
         self.data_loader = None
         self.expert_models = {}
         self.fusion_models = {}
         self.results = {}
+        self.time_stamps = None  # 用于存储时间戳
 
     def load_and_preprocess_data(self):
         """加载和预处理数据"""
@@ -79,7 +90,12 @@ class FloatingWindPlatformExperiment:
         data = self.data_loader.load_data()
 
         # 预处理数据
-        target_scaled, covariate_scaled = self.data_loader.preprocess_data()
+
+        
+
+        target_scaled, covariate_scaled, time_stamps = self.data_loader.preprocess_data()
+        
+        self.time_stamps = time_stamps  # 保存时间戳
 
         # 创建序列样本
         X, y = self.data_loader.create_sequences(target_scaled, covariate_scaled)
@@ -111,14 +127,14 @@ class FloatingWindPlatformExperiment:
         # 优化PatchTST
         logger.info("优化PatchTST超参数...")
         patchtst_params = hp_optimizer.optimize_patchtst(
-            self.X_train, self.y_train, self.X_val, self.y_val
-        )
+            self.X_train, self.y_train, self.X_val, self.y_val,
+            params=self.config)                 # 把已有配置字典传进来
 
         # 优化NHITS
         logger.info("优化NHITS超参数...")
         nhits_params = hp_optimizer.optimize_nhits(
-            self.X_train, self.y_train, self.X_val, self.y_val
-        )
+            self.X_train, self.y_train, self.X_val, self.y_val,
+            params=self.config)                 # 把已有配置字典传进来        )
 
         # 保存优化结果
         self.optimal_params = {
@@ -133,6 +149,15 @@ class FloatingWindPlatformExperiment:
         logger.info("超参数优化完成")
 
         return self.optimal_params
+
+    def _create_dataloader(self, X, y, shuffle=True):
+        """创建数据加载器"""
+        dataset = TensorDataset(torch.FloatTensor(X), torch.FloatTensor(y))
+        return TorchDataLoader(
+            dataset,
+            batch_size=self.config['training']['batch_size'],
+            shuffle=shuffle
+        )
 
     def train_expert_models(self, use_optimized_params: bool = True):
         """训练专家模型"""
@@ -154,8 +179,7 @@ class FloatingWindPlatformExperiment:
         patchtst_model = PatchTST(
             input_size=input_size,
             horizon=horizon,
-            num_features=num_features,
-            **patchtst_config
+            num_features=num_features, **patchtst_config
         )
 
         # 创建NHITS模型
@@ -177,7 +201,12 @@ class FloatingWindPlatformExperiment:
         train_loader = self._create_dataloader(self.X_train, self.y_train)
         val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
 
-        patchtst_trainer.train_model(train_loader, val_loader, num_epochs=self.config['training']['num_epochs'])
+        patchtst_trainer.train_model(
+            train_loader,
+            val_loader,
+            num_epochs=self.config['training']['num_epochs'],
+            patience=self.config['training']['patience']
+        )
 
         # 训练NHITS
         logger.info("训练NHITS...")
@@ -185,7 +214,12 @@ class FloatingWindPlatformExperiment:
         learning_rate = nhits_config.get('learning_rate', 1e-3)
         nhits_trainer.setup_training(learning_rate=learning_rate)
 
-        nhits_trainer.train_model(train_loader, val_loader, num_epochs=self.config['training']['num_epochs'])
+        nhits_trainer.train_model(
+            train_loader,
+            val_loader,
+            num_epochs=self.config['training']['num_epochs'],
+            patience=self.config['training']['patience']
+        )
 
         # 保存模型
         self.expert_models = {
@@ -214,16 +248,37 @@ class FloatingWindPlatformExperiment:
             predictions = trainer.predict(test_loader)
             expert_predictions[name] = predictions
 
-        # 保存预测结果
+        # 保存预测结果（原始尺度和反标准化后的尺度）
         self.expert_predictions = expert_predictions
 
-        # 保存到文件
-        for name, predictions in expert_predictions.items():
-            np.save(f"{self.results_dir}/{name}_predictions.npy", predictions)
+        # 反标准化预测结果
+        self.expert_predictions_original = {}
+        for name, preds in expert_predictions.items():
+            # 保存标准化的预测
+            np.save(f"{self.results_dir}/{name}_predictions_scaled.npy", preds)
+
+            # 反标准化并保存
+            original_preds = self._inverse_transform_predictions(preds)
+            self.expert_predictions_original[name] = original_preds
+            np.save(f"{self.results_dir}/{name}_predictions_original.npy", original_preds)
 
         logger.info("专家预测获取完成")
 
         return expert_predictions
+
+    def _inverse_transform_predictions(self, scaled_preds):
+        """将标准化的预测转换回原始尺度"""
+        # scaled_preds 形状: [n_samples, horizon]
+        n_samples, horizon = scaled_preds.shape
+        original_preds = np.zeros_like(scaled_preds)
+
+        for i in range(n_samples):
+            for t in range(horizon):
+                original_preds[i, t] = self.data_loader.inverse_transform_target(
+                    scaled_preds[i, t].reshape(-1, 1)
+                ).flatten()[0]
+
+        return original_preds
 
     def implement_strategy_a(self):
         """实现策略A：静态优化权重"""
@@ -260,14 +315,19 @@ class FloatingWindPlatformExperiment:
         for i, weight in enumerate(optimal_weights):
             strategy_a_predictions += weight * expert_preds_combined[:, :, i]
 
+        # 反标准化预测结果
+        strategy_a_predictions_original = self._inverse_transform_predictions(strategy_a_predictions)
+
         # 保存结果
         self.strategy_a_results = {
             'predictions': strategy_a_predictions,
+            'predictions_original': strategy_a_predictions_original,
             'weights': optimal_weights,
             'validation_score': best_score
         }
 
-        np.save(f"{self.results_dir}/strategy_a_predictions.npy", strategy_a_predictions)
+        np.save(f"{self.results_dir}/strategy_a_predictions_scaled.npy", strategy_a_predictions)
+        np.save(f"{self.results_dir}/strategy_a_predictions_original.npy", strategy_a_predictions_original)
         np.save(f"{self.results_dir}/strategy_a_weights.npy", optimal_weights)
 
         logger.info(f"策略A完成 - 最优权重: {optimal_weights}, 验证集RMSE: {best_score:.6f}")
@@ -281,6 +341,8 @@ class FloatingWindPlatformExperiment:
         # 准备数据
         patchtst_pred = self.expert_predictions['patchtst']
         nhits_pred = self.expert_predictions['nhits']
+
+        # 合并预测 [n_samples, horizon, n_experts]
         expert_preds_combined = np.stack([patchtst_pred, nhits_pred], axis=2)
 
         # 使用验证集来优化系数
@@ -294,7 +356,7 @@ class FloatingWindPlatformExperiment:
 
         val_expert_preds_combined = np.stack([val_predictions['patchtst'], val_predictions['nhits']], axis=2)
 
-        # 使用MPA优化线性系数
+        # 使用MPA优化系数
         mpa_config = self.config['mpa']
         optimizer = StackingOptimizer(mpa_config)
 
@@ -302,22 +364,28 @@ class FloatingWindPlatformExperiment:
             val_expert_preds_combined, self.y_val
         )
 
-        # 在测试集上应用线性组合
-        w0 = optimal_coefficients[0]  # 截距
-        weights = optimal_coefficients[1:]  # 专家权重
+        # 在测试集上应用系数
+        # 系数包括截距项和权重
+        w0 = optimal_coefficients[0]
+        weights = optimal_coefficients[1:]
 
         strategy_b_predictions = np.full_like(self.y_test, w0)
         for i, weight in enumerate(weights):
             strategy_b_predictions += weight * expert_preds_combined[:, :, i]
 
+        # 反标准化预测结果
+        strategy_b_predictions_original = self._inverse_transform_predictions(strategy_b_predictions)
+
         # 保存结果
         self.strategy_b_results = {
             'predictions': strategy_b_predictions,
+            'predictions_original': strategy_b_predictions_original,
             'coefficients': optimal_coefficients,
             'validation_score': best_score
         }
 
-        np.save(f"{self.results_dir}/strategy_b_predictions.npy", strategy_b_predictions)
+        np.save(f"{self.results_dir}/strategy_b_predictions_scaled.npy", strategy_b_predictions)
+        np.save(f"{self.results_dir}/strategy_b_predictions_original.npy", strategy_b_predictions_original)
         np.save(f"{self.results_dir}/strategy_b_coefficients.npy", optimal_coefficients)
 
         logger.info(f"策略B完成 - 最优系数: {optimal_coefficients}, 验证集RMSE: {best_score:.6f}")
@@ -328,247 +396,359 @@ class FloatingWindPlatformExperiment:
         """实现策略C：动态门控网络"""
         logger.info("实现策略C：动态门控网络...")
 
-        n_samples, input_size, num_features = self.X_train.shape
-        _, horizon = self.y_train.shape
-
-        # 创建门控网络
-        gating_config = self.config['models']['gating_network']
-        gating_network = GatingNetwork(
-            input_size=1,  # 只处理目标变量
-            horizon=horizon,
-            n_experts=2,  # PatchTST和NHITS
-            **gating_config
-        )
-
-        # 提取专家模型
+        # 获取专家模型
         patchtst_model = self.expert_models['patchtst']['model']
         nhits_model = self.expert_models['nhits']['model']
-        expert_models_list = [patchtst_model, nhits_model]
 
         # 创建动态融合模型
-        fusion_model = DynamicFusionModel(
+        n_experts = 2
+        input_size = self.X_train.shape[1]
+        horizon = self.y_train.shape[1]
+        num_features = self.X_train.shape[2]
+
+        # 创建门控网络
+        gating_network = GatingNetwork(
+            input_size=num_features,
+            hidden_size=self.config['models']['gating_network']['hidden_size'],
+            num_layers=self.config['models']['gating_network']['num_layers'],
+            horizon=horizon,
+            n_experts=n_experts,
+            dropout=self.config['models']['gating_network']['dropout']
+        )
+
+        # 创建动态融合模型
+        dynamic_model = DynamicFusionModel(
             gating_network=gating_network,
             input_size=input_size,
             horizon=horizon,
-            n_experts=2,
-            num_features=num_features
+            n_experts=n_experts
         )
 
         # 创建训练器
-        trainer = DynamicFusionTrainer(fusion_model, expert_models_list, self.device)
-        trainer.setup_training()
+        trainer = DynamicFusionTrainer(
+            model=dynamic_model,
+            expert_models=[patchtst_model, nhits_model],
+            device=self.device
+        )
+
+        # 设置训练参数
+        trainer.setup_training(
+            learning_rate=self.config['training']['learning_rate'],
+            weight_decay=self.config['training']['weight_decay']
+        )
 
         # 创建数据加载器
         train_loader = self._create_dataloader(self.X_train, self.y_train)
         val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
-        test_loader = self._create_dataloader(self.X_test, self.y_test, shuffle=False)
 
         # 训练模型
-        trainer.train_model(train_loader, val_loader, num_epochs=self.config['training']['num_epochs'])
+        logger.info("训练动态门控网络...")
+        trainer.train_model(
+            train_loader,
+            val_loader,
+            num_epochs=self.config['training']['num_epochs'],
+            patience=self.config['training']['patience']
+        )
 
-        # 预测
-        strategy_c_predictions, coefficients = trainer.predict(test_loader)
+        # 在测试集上预测
+        test_loader = self._create_dataloader(self.X_test, self.y_test, shuffle=False)
+        predictions, coefficients = trainer.predict(test_loader)
+
+        # 反标准化预测结果
+        predictions_original = self._inverse_transform_predictions(predictions)
 
         # 保存结果
         self.strategy_c_results = {
-            'predictions': strategy_c_predictions,
-            'coefficients': coefficients,
-            'model': fusion_model,
-            'trainer': trainer
+            'model': dynamic_model,
+            'trainer': trainer,
+            'predictions': predictions,
+            'predictions_original': predictions_original,
+            'coefficients': coefficients
         }
 
-        np.save(f"{self.results_dir}/strategy_c_predictions.npy", strategy_c_predictions)
+        # 保存模型和结果
+        trainer.save_model(f"{self.results_dir}/dynamic_fusion_model.pth")
+        np.save(f"{self.results_dir}/strategy_c_predictions_scaled.npy", predictions)
+        np.save(f"{self.results_dir}/strategy_c_predictions_original.npy", predictions_original)
         np.save(f"{self.results_dir}/strategy_c_coefficients.npy", coefficients)
-
-        # 保存模型
-        trainer.save_model(f"{self.results_dir}/strategy_c_model.pth")
 
         logger.info("策略C完成")
 
         return self.strategy_c_results
 
+    def calculate_metrics(self, predictions, true_values, is_scaled=True):
+        """计算评估指标"""
+        # 如果是标准化的数据，先反标准化
+        if is_scaled:
+            preds = self._inverse_transform_predictions(predictions)
+            trues = self._inverse_transform_predictions(true_values)
+        else:
+            preds = predictions
+            trues = true_values
+
+        # 计算基本指标
+        mae = mean_absolute_error(trues.flatten(), preds.flatten())
+        rmse = np.sqrt(mean_squared_error(trues.flatten(), preds.flatten()))
+        r2 = r2_score(trues.flatten(), preds.flatten())
+
+        # 计算MAPE（避免除以零）
+        mask = trues != 0
+        if np.any(mask):
+            mape = mean_absolute_percentage_error(
+                trues[mask].flatten(),
+                preds[mask].flatten()
+            ) * 100  # 转换为百分比
+        else:
+            mape = np.nan
+
+        # 计算前5%最大波峰的误差
+        peak_percentage = self.config['evaluation']['peak_percentage']
+        flattened_trues = trues.flatten()
+        flattened_preds = preds.flatten()
+
+        # 找到峰值阈值
+        peak_threshold = np.percentile(flattened_trues, 100 - peak_percentage * 100)
+        peak_mask = flattened_trues >= peak_threshold
+
+        if np.any(peak_mask):
+            peak_rmse = np.sqrt(mean_squared_error(
+                flattened_trues[peak_mask],
+                flattened_preds[peak_mask]
+            ))
+            peak_mae = mean_absolute_error(
+                flattened_trues[peak_mask],
+                flattened_preds[peak_mask]
+            )
+        else:
+            peak_rmse = np.nan
+            peak_mae = np.nan
+
+        return {
+            'MAE': mae,
+            'RMSE': rmse,
+            'MAPE': mape,
+            'R2': r2,
+            'peak_rmse': peak_rmse,
+            'peak_mae': peak_mae
+        }
+
     def evaluate_all_strategies(self):
-        """评估所有策略的性能"""
-        logger.info("评估所有策略性能...")
+        """评估所有策略"""
+        logger.info("评估所有策略...")
+
+        # 准备真实值（反标准化）
+        self.y_test_original = self._inverse_transform_predictions(self.y_test)
 
         # 评估专家模型
-        expert_metrics = {}
-        for name, predictions in self.expert_predictions.items():
-            metrics = EvaluationMetrics.calculate_all_metrics(
-                self.y_test, predictions,
-                peak_percentage=self.config['evaluation']['peak_percentage']
-            )
-            expert_metrics[name] = metrics
-
-        # 评估策略A
-        strategy_a_metrics = EvaluationMetrics.calculate_all_metrics(
-            self.y_test, self.strategy_a_results['predictions'],
-            peak_percentage=self.config['evaluation']['peak_percentage']
+        patchtst_metrics = self.calculate_metrics(
+            self.expert_predictions['patchtst'],
+            self.y_test
         )
 
-        # 评估策略B
-        strategy_b_metrics = EvaluationMetrics.calculate_all_metrics(
-            self.y_test, self.strategy_b_results['predictions'],
-            peak_percentage=self.config['evaluation']['peak_percentage']
+        nhits_metrics = self.calculate_metrics(
+            self.expert_predictions['nhits'],
+            self.y_test
         )
 
-        # 评估策略C
-        strategy_c_metrics = EvaluationMetrics.calculate_all_metrics(
-            self.y_test, self.strategy_c_results['predictions'],
-            peak_percentage=self.config['evaluation']['peak_percentage']
+        # 评估融合策略
+        strategy_a_metrics = self.calculate_metrics(
+            self.strategy_a_results['predictions'],
+            self.y_test
         )
 
-        # 合并所有结果
-        all_results = {
-            **expert_metrics,
-            'Strategy_A_Static': strategy_a_metrics,
-            'Strategy_B_Stacking': strategy_b_metrics,
-            'Strategy_C_Dynamic': strategy_c_metrics
+        strategy_b_metrics = self.calculate_metrics(
+            self.strategy_b_results['predictions'],
+            self.y_test
+        )
+
+        strategy_c_metrics = self.calculate_metrics(
+            self.strategy_c_results['predictions'],
+            self.y_test
+        )
+
+        # 整理结果
+        self.results = {
+            'PatchTST': patchtst_metrics,
+            'NHITS': nhits_metrics,
+            '策略A (静态优化权重)': strategy_a_metrics,
+            '策略B (广义线性融合)': strategy_b_metrics,
+            '策略C (动态门控网络)': strategy_c_metrics
         }
-
-        self.all_metrics = all_results
 
         # 保存结果
-        with open(f"{self.results_dir}/all_metrics.yaml", 'w') as f:
-            # 转换numpy类型为Python原生类型
-            yaml_safe_results = {}
-            for model_name, metrics in all_results.items():
-                yaml_safe_results[model_name] = {}
-                for metric_name, value in metrics.items():
-                    if isinstance(value, (np.ndarray, np.generic)):
-                        yaml_safe_results[model_name][metric_name] = float(value)
-                    elif isinstance(value, (list, tuple)):
-                        yaml_safe_results[model_name][metric_name] = [
-                            float(v) if isinstance(v, (np.ndarray, np.generic)) else v for v in value]
-                    else:
-                        yaml_safe_results[model_name][metric_name] = value
+        results_df = pd.DataFrame(self.results).T
+        results_df.to_csv(f"{self.results_dir}/evaluation_results.csv")
 
-            yaml.dump(yaml_safe_results, f)
+        logger.info("评估完成，结果已保存")
+        return self.results
 
-        # 比较模型
-        comparison = ModelComparison.compare_models(all_results)
+    def visualize_results(self):
+        """可视化结果"""
+        logger.info("生成可视化结果...")
 
-        with open(f"{self.results_dir}/model_comparison.yaml", 'w') as f:
-            yaml.dump(comparison, f)
+        # 1. 性能指标对比图
+        self._plot_metrics_comparison()
 
-        logger.info("性能评估完成")
+        # 2. 预测示例图
+        self._plot_prediction_examples()
 
-        return all_results, comparison
+        # 3. 策略C权重分析
+        self._analyze_strategy_c_weights()
 
-    def _create_dataloader(self, X: np.ndarray, y: np.ndarray, shuffle: bool = True, batch_size: Optional[int] = None):
-        """创建数据加载器"""
-        if batch_size is None:
-            batch_size = self.config['training']['batch_size']
+        logger.info("可视化完成")
 
-        dataset = torch.utils.data.TensorDataset(
-            torch.FloatTensor(X),
-            torch.FloatTensor(y)
-        )
+    def _plot_metrics_comparison(self):
+        """绘制指标对比图"""
+        metrics = ['MAE', 'RMSE', 'MAPE', 'R2', 'peak_rmse']
+        results_df = pd.DataFrame(self.results).T
 
-        return torch.utils.data.DataLoader(
-            dataset,
-            batch_size=batch_size,
-            shuffle=shuffle
-        )
+        # 创建子图
+        fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+        axes = axes.flatten()
 
-    def generate_summary_report(self):
-        """生成总结报告"""
-        logger.info("生成总结报告...")
+        for i, metric in enumerate(metrics):
+            ax = axes[i]
+            results_df[metric].sort_values().plot(kind='barh', ax=ax, color='skyblue')
+            ax.set_title(f'{metric} 对比', fontsize=14)
+            ax.set_xlabel(metric, fontsize=12)
+            ax.grid(axis='x', linestyle='--', alpha=0.7)
 
-        # 创建结果摘要
-        summary = {
-            'experiment_info': {
-                'timestamp': datetime.now().isoformat(),
-                'config_file': self.config_path,
-                'device': str(self.device),
-                'data_shape': {
-                    'train': f"{self.X_train.shape}, {self.y_train.shape}",
-                    'val': f"{self.X_val.shape}, {self.y_val.shape}",
-                    'test': f"{self.X_test.shape}, {self.y_test.shape}"
-                }
-            },
-            'performance_summary': {}
-        }
+            # 为R2特殊处理，范围设置在0-1
+            if metric == 'R2':
+                ax.set_xlim(0, 1)
 
-        # 性能摘要
-        for model_name, metrics in self.all_metrics.items():
-            summary['performance_summary'][model_name] = {
-                'RMSE': float(metrics['RMSE']),
-                'MAE': float(metrics['MAE']),
-                'MAPE': float(metrics['MAPE']),
-                'R2': float(metrics['R2']),
-                'Peak_RMSE': float(metrics['peak_rmse'])
-            }
+        # 移除最后一个空图
+        fig.delaxes(axes[-1])
 
-        # 保存摘要
-        with open(f"{self.results_dir}/experiment_summary.yaml", 'w') as f:
-            yaml.dump(summary, f)
+        plt.tight_layout()
+        plt.savefig(f"{self.visualization_dir}/metrics_comparison.png")
+        plt.close()
 
-        logger.info("总结报告生成完成")
+    def _plot_prediction_examples(self, n_examples=3):
+        """绘制预测示例"""
+        # 随机选择几个样本
+        indices = np.random.choice(len(self.y_test), n_examples, replace=False)
 
-        return summary
+        for idx in indices:
+            fig, ax = plt.subplots(figsize=(12, 6))
+
+            # 真实值
+            ax.plot(self.y_test_original[idx], label='真实值', color='black', linewidth=2)
+
+            # 专家模型预测
+            ax.plot(self.expert_predictions_original['patchtst'][idx], label='PatchTST', linestyle='--', alpha=0.8)
+            ax.plot(self.expert_predictions_original['nhits'][idx], label='NHITS', linestyle='--', alpha=0.8)
+
+            # 融合策略预测
+            ax.plot(self.strategy_a_results['predictions_original'][idx], label='策略A', alpha=0.8)
+            ax.plot(self.strategy_b_results['predictions_original'][idx], label='策略B', alpha=0.8)
+            ax.plot(self.strategy_c_results['predictions_original'][idx], label='策略C', alpha=0.8)
+
+            ax.set_title(f'预测示例 {idx}', fontsize=14)
+            ax.set_xlabel('时间步', fontsize=12)
+            ax.set_ylabel('波浪高度 (m)', fontsize=12)
+            ax.legend()
+            ax.grid(linestyle='--', alpha=0.7)
+
+            plt.tight_layout()
+            plt.savefig(f"{self.visualization_dir}/prediction_example_{idx}.png")
+            plt.close()
+
+    def _analyze_strategy_c_weights(self):
+        """分析策略C的权重"""
+        coefficients = self.strategy_c_results['coefficients']  # [n_samples, horizon, 3]
+        w0 = coefficients[:, :, 0]  # 截距项
+        w1 = coefficients[:, :, 1]  # PatchTST权重
+        w2 = coefficients[:, :, 2]  # NHITS权重
+
+        # 1. 绘制权重分布
+        fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+        axes[0].hist(w0.flatten(), bins=50, alpha=0.7)
+        axes[0].set_title('w0 (截距项) 分布', fontsize=14)
+        axes[0].grid(linestyle='--', alpha=0.7)
+
+        axes[1].hist(w1.flatten(), bins=50, alpha=0.7)
+        axes[1].set_title('w1 (PatchTST系数) 分布', fontsize=14)
+        axes[1].axvline(x=0, color='r', linestyle='--')
+        axes[1].axvline(x=1, color='g', linestyle='--')
+        axes[1].grid(linestyle='--', alpha=0.7)
+
+        axes[2].hist(w2.flatten(), bins=50, alpha=0.7)
+        axes[2].set_title('w2 (NHITS系数) 分布', fontsize=14)
+        axes[2].axvline(x=0, color='r', linestyle='--')
+        axes[2].axvline(x=1, color='g', linestyle='--')
+        axes[2].grid(linestyle='--', alpha=0.7)
+
+        plt.tight_layout()
+        plt.savefig(f"{self.visualization_dir}/strategy_c_weights_distribution.png")
+        plt.close()
+
+        # 2. 寻找权重超出[0,1]范围的时刻
+        w1_outside = np.where((w1 < 0) | (w1 > 1))
+        w2_outside = np.where((w2 < 0) | (w2 > 1))
+
+        logger.info(f"策略C中，w1有 {len(w1_outside[0])} 个时刻超出[0,1]范围")
+        logger.info(f"策略C中，w2有 {len(w2_outside[0])} 个时刻超出[0,1]范围")
+
+        # 3. 绘制几个权重变化的例子
+        n_examples = 3
+        indices = np.random.choice(coefficients.shape[0], n_examples, replace=False)
+
+        for idx in indices:
+            fig, ax = plt.subplots(figsize=(12, 6))
+
+            ax.plot(w0[idx], label='w0 (截距项)', alpha=0.8)
+            ax.plot(w1[idx], label='w1 (PatchTST)', alpha=0.8)
+            ax.plot(w2[idx], label='w2 (NHITS)', alpha=0.8)
+            ax.axhline(y=0, color='r', linestyle='--', alpha=0.5)
+            ax.axhline(y=1, color='g', linestyle='--', alpha=0.5)
+
+            ax.set_title(f'动态系数示例 {idx}', fontsize=14)
+            ax.set_xlabel('时间步', fontsize=12)
+            ax.set_ylabel('系数值', fontsize=12)
+            ax.legend()
+            ax.grid(linestyle='--', alpha=0.7)
+
+            plt.tight_layout()
+            plt.savefig(f"{self.visualization_dir}/dynamic_coefficients_example_{idx}.png")
+            plt.close()
 
     def run_complete_experiment(self, optimize_hyperparameters: bool = True):
-        """运行完整实验"""
+        """运行完整实验流程"""
         logger.info("开始完整实验流程...")
 
-        try:
-            # 1. 数据预处理
-            self.load_and_preprocess_data()
+        # 1. 数据加载和预处理
+        self.load_and_preprocess_data()
 
-            # 2. 超参数优化（可选）
-            if optimize_hyperparameters:
-                self.optimize_expert_models()
+        # 2. 超参数优化（可选）
+        if optimize_hyperparameters:
+            self.optimize_expert_models()
 
-            # 3. 训练专家模型
-            self.train_expert_models(use_optimized_params=optimize_hyperparameters)
+        # 3. 训练专家模型
+        self.train_expert_models(use_optimized_params=optimize_hyperparameters)
 
-            # 4. 获取专家预测
-            self.get_expert_predictions()
+        # 4. 获取专家模型预测
+        self.get_expert_predictions()
 
-            # 5. 实现三种融合策略
-            self.implement_strategy_a()
-            self.implement_strategy_b()
-            self.implement_strategy_c()
+        # 5. 执行融合策略
+        self.implement_strategy_a()
+        self.implement_strategy_b()
+        self.implement_strategy_c()
 
-            # 6. 评估所有策略
-            self.evaluate_all_strategies()
+        # 6. 评估所有策略
+        self.evaluate_all_strategies()
 
-            # 7. 生成总结报告
-            self.generate_summary_report()
+        # 7. 可视化结果
+        self.visualize_results()
 
-            logger.info("完整实验流程完成！")
+        # 8. 保存最终结果表格
+        results_df = pd.DataFrame(self.results).T
+        print("\n" + "=" * 80)
+        print("实验结果汇总")
+        print("=" * 80)
+        print(results_df.round(4))
+        print("\n" + "=" * 80)
 
-            return self.all_metrics
-
-        except Exception as e:
-            logger.error(f"实验过程中出现错误: {str(e)}")
-            raise
-
-
-def main():
-    """主函数"""
-    # 创建实验实例
-    experiment = FloatingWindPlatformExperiment()
-
-    # 运行完整实验
-    results = experiment.run_complete_experiment(optimize_hyperparameters=True)
-
-    # 打印结果摘要
-    print("\n" + "=" * 60)
-    print("实验结果摘要")
-    print("=" * 60)
-
-    for model_name, metrics in results.items():
-        print(f"\n{model_name}:")
-        print(f"  RMSE: {metrics['RMSE']:.6f}")
-        print(f"  MAE:  {metrics['MAE']:.6f}")
-        print(f"  MAPE: {metrics['MAPE']:.6f}%")
-        print(f"  R²:   {metrics['R2']:.6f}")
-        print(f"  峰值RMSE: {metrics['peak_rmse']:.6f}")
-
-    print(f"\n详细结果已保存到: {experiment.results_dir}")
-
-
-if __name__ == "__main__":
-    main()
+        logger.info("完整实验流程完成")
+        return self.results

@@ -102,13 +102,43 @@ def main():
         logger.info("初始化实验...")
         experiment = FloatingWindPlatformExperiment(args.config)
 
-        # 快速测试模式
+        # 快速测试模式 - 使用真实数据
         if args.quick:
-            logger.info("运行快速测试模式...")
-            # 这里可以添加快速测试的逻辑
-            print("快速测试模式 - 运行基本功能验证")
-            from quick_test import main as quick_test_main
-            quick_test_main()
+            logger.info("运行快速验证模式 - 使用真实数据...")
+            print("快速验证模式 - 使用真实数据验证系统功能")
+            
+            # 加载和预处理真实数据
+            logger.info("步骤1: 加载真实数据...")
+            experiment.load_and_preprocess_data()
+            print("✓ 真实数据加载成功")
+            
+            # 使用默认参数快速训练模型（减少epoch）
+            logger.info("步骤2: 快速训练模型...")
+            original_epochs = experiment.config['training']['num_epochs']
+            experiment.config['training']['num_epochs'] = 5  # 快速模式只训练5个epoch
+            
+            experiment.train_expert_models(use_optimized_params=False)
+            experiment.get_expert_predictions()
+            print("✓ 模型训练完成")
+            
+            # 快速运行融合策略（减少MPA迭代）
+            logger.info("步骤3: 快速运行融合策略...")
+            original_mpa_iterations = experiment.config['mpa']['max_iterations']
+            experiment.config['mpa']['max_iterations'] = 20  # 快速模式只迭代20次
+            experiment.config['mpa']['max_iterations'] = experiment.config['mpa'].get('quick_iterations', 20)
+            #跑“完整”实验
+           # max_iter = self.config['mpa']['max_iterations']
+            
+            experiment.implement_strategy_a()
+            experiment.implement_strategy_b()
+            
+            # 恢复原始配置
+            experiment.config['training']['num_epochs'] = original_epochs
+            experiment.config['mpa']['max_iterations'] = original_mpa_iterations
+            
+            logger.info("快速验证模式完成！")
+            print("✓ 融合策略运行完成")
+            print("\n系统验证成功！可以运行完整实验以获得更精确的结果。")
             return
 
         # 仅数据预处理

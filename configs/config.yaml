@@ -1,17 +1,23 @@
-# 浮式风机平台运动响应预测项目配置文件
+# 浮式风机平台运动响应预测项目配置文件（整合版）
 
-# 数据配置
+# 1. 路径配置（替代配置二.py的路径逻辑）
+path:
+  project_path: "C:\\Temp\\Pycharm\\floating_wind_platform"
+  data_path: "C:\\Temp\\Pycharm\\floating_wind_platform\\data\\浮式风机平台.xlsx"
+  results_path: "C:\\Temp\\Pycharm\\floating_wind_platform\\results"
+
+# 2. 数据配置（含衍生变量，替代配置二.py的DATA相关变量）
 data:
-  file_path: "data/浮式风机平台.xlsx"
   target_variable: "Wave1Elev"
-  covariates: ["纵荡", "横荡", "垂荡", "横摇", "纵摇", "艏摇"]
-  input_size: 96  # 输入序列长度 (24小时 * 4个采样点/小时)
-  horizon: 24     # 预测 horizon (6小时 * 4个采样点/小时)
+  covariates: ["PtfmSurge", "PtfmSway", "PtfmHeave", "PtfmRoll", "PtfmPitch", "PtfmYaw"]
+  num_features: 7  # covariates(6) + target_variable(1)，对应N_FEATURES
+  input_size: 96  # 24小时 * 4个采样点/小时
+  horizon: 24     # 6小时 * 4个采样点/小时
   train_ratio: 0.7
   val_ratio: 0.1
   test_ratio: 0.2
 
-# 模型配置
+# 3. 模型配置（含DRFN衍生配置，替代配置二.py的模型参数）
 models:
   patchtst:
     patch_len: 16
@@ -36,34 +42,47 @@ models:
     num_layers: 2
     dropout: 0.2
 
-# 训练配置
+  drfn:  # 新增DRFN配置，引用gating_network参数，避免重复
+    lstm_hidden_size: 64  # 与gating_network.hidden_size一致
+    lstm_num_layers: 2    # 与gating_network.num_layers一致
+
+# 4. 训练配置（直接对应代码调用参数）
 training:
   batch_size: 32
   num_epochs: 100
+  # 最大训练轮数（对应MAX_EPOCHS）
+  #max_iterations: 60   # 或 100
   learning_rate: 0.001
-  weight_decay: 1e-5
+  weight_decay: 1e-5  # 对应配置二.py的L2_LAMBDA
   patience: 15
   min_delta: 1e-6
 
-# 超参数优化
+  #MPA 迭代次数可配置化
+mpa:
+  max_iterations: 100
+  quick_iterations: 20
+
+# 5. 超参数优化配置（含配置二.py的独有参数）
 optimization:
   n_trials: 50
   timeout: 3600
+  tuning_epochs: 10    # 对应配置二.py的TUNING_EPOCHS
+  n_splits_cv: 4       # 对应配置二.py的N_SPLITS_CV
 
-# MPA优化器配置
+# 6. MPA优化器配置
 mpa:
   population_size: 30
   max_iterations: 100
   fads_probability: 0.2
   convergence_threshold: 1e-6
 
-# 评估指标
+# 7. 评估指标配置
 evaluation:
   metrics: ["MAE", "MAPE", "RMSE", "R2"]
   calculate_peak_error: true
   peak_percentage: 0.05  # 前5%最大波峰
 
-# 输出配置
+# 8. 输出配置
 output:
   save_models: true
   save_predictions: true

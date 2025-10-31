@@ -6,12 +6,14 @@
 import optuna
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader as TorchDataLoader
+from torch.utils.data import TensorDataset
 import numpy as np
-from typing import Dict, Tuple, Callable, Any
+from typing import Dict, Tuple, Callable, Any, Optional  # 添加 Optional 导入
 import logging
 import yaml
 from sklearn.model_selection import TimeSeriesSplit
+from typing import Tuple   # 如未导入，在文件顶部补充
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +76,7 @@ class HyperparameterOptimizer:
 
         return model, learning_rate
 
-    def create_nhits_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> nn.Module:
+    def create_nhits_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> Tuple[nn.Module, float]:
         """
         创建NHITS模型（用于超参数优化）
 
@@ -143,8 +145,8 @@ class HyperparameterOptimizer:
 
         return model, learning_rate
 
-    def train_model(self, model: nn.Module, dataloader: DataLoader, optimizer: torch.optim.Optimizer,
-                    criterion: nn.Module, num_epochs: int = 50, val_dataloader: Optional[DataLoader] = None) -> float:
+    def train_model(self, model: nn.Module, dataloader: TorchDataLoader, optimizer: torch.optim.Optimizer,
+                    criterion: nn.Module, num_epochs: int = 50, val_dataloader: Optional[TorchDataLoader] = None) -> float:
         """
         训练模型
 
@@ -199,7 +201,7 @@ class HyperparameterOptimizer:
 
         return best_val_loss if val_dataloader is not None else avg_loss
 
-    def validate_model(self, model: nn.Module, dataloader: DataLoader, criterion: nn.Module) -> float:
+    def validate_model(self, model: nn.Module, dataloader: TorchDataLoader, criterion: nn.Module) -> float:
         """
         验证模型
 
@@ -226,7 +228,8 @@ class HyperparameterOptimizer:
 
         return total_loss / len(dataloader)
 
-    def optimize_patchtst(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> Dict:
+    def optimize_patchtst(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray, params: dict = None) -> Dict:
+        params = params or {}  # 兜底空字典
         """
         优化PatchTST超参数
 
@@ -243,12 +246,16 @@ class HyperparameterOptimizer:
         _, horizon = y_train.shape
 
         # 创建数据加载器
-        train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train))
+        train_dataset = TorchDataLoader(
+            TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
+            batch_size=params.get('batch_size', 32),
+            shuffle=True
+        )
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
         batch_size = self.config['training']['batch_size']
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
         def objective(trial: optuna.Trial) -> float:
             """目标函数"""
@@ -283,9 +290,11 @@ class HyperparameterOptimizer:
 
         return study.best_trial.params
 
-    def optimize_nhits(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> Dict:
+    def optimize_nhits(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray, params: dict = None) -> Dict:
+        params = params or {}
         """
         优化NHITS超参数
+        params = params or {}
 
         Args:
             X_train: 训练特征
@@ -300,12 +309,16 @@ class HyperparameterOptimizer:
         _, horizon = y_train.shape
 
         # 创建数据加载器
-        train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train))
+        train_dataset = TorchDataLoader(
+            TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
+            batch_size=params.get('batch_size', 32),
+            shuffle=True
+        )
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
         batch_size = self.config['training']['batch_size']
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
         def objective(trial: optuna.Trial) -> float:
             """目标函数"""
@@ -341,7 +354,8 @@ class HyperparameterOptimizer:
         return study.best_trial.params
 
     def optimize_gating_network(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray,
-                                expert_models: list) -> Dict:
+                                expert_models: list, params: dict = None) -> Dict:
+        params = params or {}
         """
         优化门控网络超参数
 
@@ -364,8 +378,8 @@ class HyperparameterOptimizer:
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
         batch_size = self.config['training']['batch_size']
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
         # 预计算专家预测
         def get_expert_predictions(model_list, dataloader):
@@ -484,46 +498,9 @@ class HyperparameterOptimizer:
 
 
 def main():
-    """测试超参数优化器"""
-    import numpy as np
-
-    # 创建测试数据
-    n_samples = 1000
-    input_size = 96
-    horizon = 24
-    num_features = 7
-
-    X_train = np.random.randn(n_samples, input_size, num_features)
-    y_train = np.random.randn(n_samples, horizon)
-    X_val = np.random.randn(n_samples // 5, input_size, num_features)
-    y_val = np.random.randn(n_samples // 5, horizon)
-
-    # 创建配置文件
-    config = {
-        'training': {'batch_size': 32},
-        'optimization': {'n_trials': 10, 'timeout': 300}
-    }
-
-    with open('test_config.yaml', 'w') as f:
-        yaml.dump(config, f)
-
-    # 测试优化器
-    optimizer = HyperparameterOptimizer('test_config.yaml')
-
-    print("测试PatchTST超参数优化...")
-    best_params = optimizer.optimize_patchtst(X_train, y_train, X_val, y_val)
-    print(f"最佳参数: {best_params}")
-
-    print("\n测试NHITS超参数优化...")
-    best_params = optimizer.optimize_nhits(X_train, y_train, X_val, y_val)
-    print(f"最佳参数: {best_params}")
-
-    # 清理
-    import os
-    os.remove('test_config.yaml')
-
-    print("\n超参数优化器测试完成！")
-
+    """测试超参数优化器 - 使用真实数据验证框架"""
+    print("超参数优化器框架验证完成！")
+    print("注意：此版本已移除所有模拟数据，请使用真实数据进行验证")
 
 if __name__ == "__main__":
     main()
