@@ -127,11 +127,12 @@ class VisualizationEngine:
                 hovertemplate=f'时间: %{{x}}<br>{model_name}: %{{y:.4f}}<extra></extra>'
             ))
 
+        layout_kwargs = PLOTLY_THEME['layout'].copy()
+        layout_kwargs['title'] = {**layout_kwargs['title'], 'text': title}  # 接收函数参数title
         fig.update_layout(
-            title=title,
             xaxis_title="时间步",
             yaxis_title="波高",
-            **PLOTLY_THEME['layout']
+            **layout_kwargs
         )
 
         # 保存图表
@@ -185,10 +186,12 @@ class VisualizationEngine:
                 row=row, col=col
             )
 
+        # 合并标题内容与主题样式，避免重复传递
+        layout_kwargs = PLOTLY_THEME['layout'].copy()
+        layout_kwargs['title'] = {**layout_kwargs['title'], 'text': "模型性能对比"}  # 保留样式，添加内容
         fig.update_layout(
-            title="模型性能对比",
             height=600,
-            **PLOTLY_THEME['layout']
+            **layout_kwargs
         )
 
         # 保存图表
@@ -236,11 +239,12 @@ class VisualizationEngine:
                 boxpoints='outliers'
             ))
 
-        fig.update_layout(
-            title=f"{strategy_name} - 动态系数分布",
-            yaxis_title="系数值",
-            **PLOTLY_THEME['layout']
-        )
+        layout_kwargs = PLOTLY_THEME['layout'].copy()
+        layout_kwargs.update({
+            'title': f"{strategy_name} - 动态系数分布",
+            'yaxis_title': "系数值"
+        })
+        fig.update_layout(**layout_kwargs)
 
         output_path = self.results_dir / "interactive" / f"{strategy_name}_coefficient_distribution.html"
         fig.write_html(str(output_path))

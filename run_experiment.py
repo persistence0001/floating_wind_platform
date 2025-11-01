@@ -127,7 +127,10 @@ def main():
                 'epochs': 100,
                 'mpa_iterations': experiment.config['mpa'].get('quick_iterations', 20)
             }
-            
+
+            # 获取专家模型预测（添加缺失的调用）
+            experiment.get_expert_predictions()
+
             # 恢复原始配置
             experiment.implement_strategy_a_quick(max_iterations=quick_config['mpa_iterations'])
             experiment.implement_strategy_b_quick(max_iterations=quick_config['mpa_iterations'])

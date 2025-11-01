@@ -160,10 +160,12 @@ class DynamicFusionTrainer:
     def __init__(self,
                  model: DynamicFusionModel,
                  expert_models: list,
-                 device: str = 'cuda' if torch.cuda.is_available() else 'cpu'):
+                 device: str = 'cuda' if torch.cuda.is_available() else 'cpu',
+                 config: dict = None):
         self.model = model.to(device)
         self.expert_models = [expert.to(device) for expert in expert_models]
         self.device = device
+        self.config = config
         self.optimizer = None
         self.scheduler = None
         self.criterion = nn.MSELoss()
@@ -173,7 +175,11 @@ class DynamicFusionTrainer:
             for param in expert.parameters():
                 param.requires_grad = False
 
-    def setup_training(self, learning_rate: float = 1e-3, weight_decay: float = 1e-5):
+    def setup_training(self, learning_rate: float = None, weight_decay: float = None):
+        if learning_rate is None:
+            learning_rate = self.config['training']['learning_rate']
+        if weight_decay is None:
+            weight_decay = self.config['training']['weight_decay']
         self.optimizer = torch.optim.AdamW(
             self.model.parameters(),
             lr=learning_rate,
@@ -184,7 +190,7 @@ class DynamicFusionTrainer:
             self.optimizer,
             mode='min',
             factor=0.5,
-            patience=10
+            patience=int(self.config['training']['patience'])
         )
 
     def get_expert_predictions(self, x: torch.Tensor) -> torch.Tensor:
@@ -231,6 +237,46 @@ class DynamicFusionTrainer:
         avg_loss = total_loss / len(dataloader)
         self.scheduler.step(avg_loss)
         return avg_loss
+
+    def train_model(self, train_loader, val_loader, num_epochs: int, patience: int) -> float:
+        """
+        完整训练流程，循环调用train_epoch和validate，支持早停
+
+        Args:
+            train_loader: 训练数据加载器
+            val_loader: 验证数据加载器
+            num_epochs: 最大训练轮数
+            patience: 早停耐心值（连续多少轮验证损失不下降则停止）
+
+        Returns:
+            最佳验证损失
+        """
+        best_val_loss = float('inf')
+        patience_counter = 0
+
+        if len(train_loader) == 0 or len(val_loader) == 0:
+            raise RuntimeError("DataLoader is empty.")
+
+        for epoch in range(1, num_epochs + 1):
+            # 训练一轮
+            train_loss = self.train_epoch(train_loader)
+            # 验证一轮
+            val_loss = self.validate(val_loader)
+
+            # 打印每轮损失
+            logger.info(f'Epoch {epoch:3d} | train_loss={train_loss:.6f} | val_loss={val_loss:.6f}')
+
+            # 早停逻辑
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                patience_counter = 0  # 重置计数器
+            else:
+                patience_counter += 1
+                if patience_counter >= patience:
+                    logger.info(f'早停触发（连续{patience}轮验证损失未下降），最佳验证损失：{best_val_loss:.6f}')
+                    break
+
+        return best_val_loss
 
 
 

@@ -30,7 +30,7 @@ class MPAOptimizer:
         self.population_size = population_size
         self.max_iterations = max_iterations
         self.fads_probability = fads_probability
-        self.convergence_threshold = convergence_threshold
+        self.convergence_threshold = float(convergence_threshold)
 
     def optimize(self,
                  objective_function: Callable[[np.ndarray], float],
@@ -113,7 +113,7 @@ class MPAOptimizer:
 
             # 检查收敛
             if iteration > 10:
-                recent_improvement = abs(fitness_history[-1] - fitness_history[-11])
+                recent_improvement = np.mean(abs(fitness_history[-1] - fitness_history[-11]))
                 if recent_improvement < self.convergence_threshold:
                     logger.info(f"在第 {iteration} 代收敛")
                     break
@@ -218,26 +218,27 @@ class MPAOptimizer:
 
         return population
 
-    class StaticWeightOptimizer:
-        """静态权重优化器"""
 
-        def __init__(self, mpa_config: dict):
-            """
-            初始化静态权重优化器
+class StaticWeightOptimizer:
+    """静态权重优化器"""
 
-            Args:
-                mpa_config: MPA配置参数
-            """
-            # 只传递MPAOptimizer支持的参数，过滤掉多余参数
-            supported_params = ['population_size', 'max_iterations', 'fads_probability', 'convergence_threshold']
-            filtered_config = {k: v for k, v in mpa_config.items() if k in supported_params}
+    def __init__(self, mpa_config: dict):
+        """
+        初始化静态权重优化器
 
-            # 记录被过滤的参数（可选，用于调试）
-            filtered_params = set(mpa_config.keys()) - set(filtered_config.keys())
-            if filtered_params:
-                print(f"[StaticWeightOptimizer] 过滤掉不支持参数: {filtered_params}")
+        Args:
+            mpa_config: MPA配置参数
+        """
+        # 只传递MPAOptimizer支持的参数，过滤掉多余参数
+        supported_params = ['population_size', 'max_iterations', 'fads_probability', 'convergence_threshold']
+        filtered_config = {k: v for k, v in mpa_config.items() if k in supported_params}
 
-            self.mpa = MPAOptimizer(**filtered_config)
+        # 记录被过滤的参数（可选，用于调试）
+        filtered_params = set(mpa_config.keys()) - set(filtered_config.keys())
+        if filtered_params:
+            print(f"[StaticWeightOptimizer] 过滤掉不支持参数: {filtered_params}")
+
+        self.mpa = MPAOptimizer(**filtered_config)
 
     def optimize_weights(self,
                          expert_predictions: np.ndarray,
@@ -306,7 +307,7 @@ class StackingOptimizer:
         supported_params = ['population_size', 'max_iterations', 'fads_probability', 'convergence_threshold']
         filtered_config = {k: v for k, v in mpa_config.items() if k in supported_params}
 
-        # 记录被过滤的参数（可选//，用于调试）
+        # 记录被过滤的参数（可选，用于调试）
         filtered_params = set(mpa_config.keys()) - set(filtered_config.keys())
         if filtered_params:
             print(f"[StackingOptimizer] 过滤掉不支持参数: {filtered_params}")
@@ -363,7 +364,7 @@ class StackingOptimizer:
 def main():
     """测试MPA优化器 - 使用真实数据验证框架"""
     print("MPA优化器框架验证完成！")
-    print("注意：此版本已移除所有模拟数据，请使用真实数据进行验证")
+    print("注意：使用真实数据进行验证")
 
 if __name__ == "__main__":
     main()

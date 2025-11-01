@@ -146,7 +146,7 @@ class HyperparameterOptimizer:
         return model, learning_rate
 
     def train_model(self, model: nn.Module, dataloader: TorchDataLoader, optimizer: torch.optim.Optimizer,
-                    criterion: nn.Module, num_epochs: int = 50, val_dataloader: Optional[TorchDataLoader] = None) -> float:
+                    criterion: nn.Module,  val_dataloader: Optional[TorchDataLoader] = None) -> float:
         """
         训练模型
 
@@ -163,7 +163,7 @@ class HyperparameterOptimizer:
         """
         model.train()
         best_val_loss = float('inf')
-        patience = 15
+        patience = int(self.config['training']['patience'])
         patience_counter = 0
 
         for epoch in range(num_epochs):
@@ -248,12 +248,14 @@ class HyperparameterOptimizer:
         # 创建数据加载器
         train_dataset = TorchDataLoader(
             TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
-            batch_size=params.get('batch_size', 32),
+            batch_size=params.get('batch_size', self.config['training']['batch_size']),
             shuffle=True
         )
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
-        batch_size = self.config['training']['batch_size']
+
+        batch_size = int(self.config['training']['batch_size'])
+
         train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -265,11 +267,12 @@ class HyperparameterOptimizer:
                 model = model.to(self.device)
 
                 # 设置优化器和损失函数
-                optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-5)
+                optimizer = torch.optim.AdamW(model.parameters(), lr=params['learning_rate'],
+                                              weight_decay=params.get('weight_decay', self.config['training']['weight_decay']))
                 criterion = nn.MSELoss()
 
                 # 训练模型
-                num_epochs = 50  # 超参数优化时使用较少的epoch
+                num_epochs = int(self.config['optimization']['tuning_epochs']) # 超参数优化时使用较少的epoch
                 val_loss = self.train_model(model, train_loader, optimizer, criterion, num_epochs, val_loader)
 
                 return val_loss
@@ -311,14 +314,14 @@ class HyperparameterOptimizer:
         # 创建数据加载器
         train_dataset = TorchDataLoader(
             TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
-            batch_size=params.get('batch_size', 32),
+            batch_size=params.get('batch_size', self.config['training']['batch_size']),
             shuffle=True
         )
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
-        batch_size = self.config['training']['batch_size']
-        train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-        val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        batch_size = int(self.config['training']['batch_size'])
+        train_loader = TorchDataLoader(train_dataset, batch_size=int(batch_size), shuffle=True)
+        val_loader = TorchDataLoader(val_dataset, batch_size=int(batch_size), shuffle=False)
 
         def objective(trial: optuna.Trial) -> float:
             """目标函数"""
@@ -328,11 +331,12 @@ class HyperparameterOptimizer:
                 model = model.to(self.device)
 
                 # 设置优化器和损失函数
-                optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=1e-5)
+                optimizer = torch.optim.AdamW(model.parameters(), lr=params.get('learning_rate', self.config['training']['learning_rate']),
+                                              weight_decay=params.get('weight_decay', self.config['training']['weight_decay']))
                 criterion = nn.MSELoss()
 
                 # 训练模型
-                num_epochs = 50
+                num_epochs = int(self.config['training']['num_epochs'])
                 val_loss = self.train_model(model, train_loader, optimizer, criterion, num_epochs, val_loader)
 
                 return val_loss
@@ -377,7 +381,8 @@ class HyperparameterOptimizer:
         train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train))
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
-        batch_size = self.config['training']['batch_size']
+
+        batch_size = int(self.config['training']['batch_size'])
         train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -407,13 +412,14 @@ class HyperparameterOptimizer:
                 gating_model = gating_model.to(self.device)
 
                 # 设置优化器和损失函数
-                optimizer = torch.optim.AdamW(gating_model.parameters(), lr=learning_rate, weight_decay=1e-5)
+                optimizer = torch.optim.AdamW(self.model.parameters(), lr=params['learning_rate'],
+                                                   weight_decay=self.config['training']['weight_decay'])
                 criterion = nn.MSELoss()
 
                 # 训练门控网络
-                num_epochs = 50
+                num_epochs = int(self.config['training']['num_epochs'])
                 best_val_loss = float('inf')
-                patience = 10
+                patience = int(self.config['training']['patience'])
                 patience_counter = 0
 
                 for epoch in range(num_epochs):

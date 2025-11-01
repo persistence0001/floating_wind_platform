@@ -19,7 +19,9 @@ sys.path.append(str(project_root))
 from src.data_preprocessing.data_loader import DataLoader
 from models.patchtst import PatchTST
 from models.nhits import NHITS
-from src.strategies.mpa_optimizer import StaticWeightOptimizer, StackingOptimizer
+#from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer
+from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer, StaticWeightOptimizer
+
 from src.strategies.gating_network import GatingNetwork
 from src.evaluation.metrics import EvaluationMetrics
 from src.visualization.plots import VisualizationEngine
@@ -68,30 +70,46 @@ def validate_data_loading():
 
 def validate_models_quick(X_train, y_train, X_val, y_val):
     """快速验证模型（使用少量epoch）"""
+    """快速验证模型（使用少量epoch）"""
+    # 添加输入验证检查
+    if X_train is None or y_train is None or X_val is None or y_val is None:
+        raise ValueError("validate_models_quick: 输入数据不能为None。请先加载数据。")
+
+    if len(X_train) == 0 or len(y_train) == 0 or len(X_val) == 0 or len(y_val) == 0:
+        raise ValueError("validate_models_quick: 输入数据不能为空数组。")
+
+    if X_train.shape[0] != y_train.shape[0] or X_val.shape[0] != y_val.shape[0]:
+        raise ValueError("validate_models_quick: 输入数据的样本数量不匹配。")
+
     print("\n" + "=" * 60)
     print("步骤2: 快速模型验证（5个epoch）")
     print("=" * 60)
+
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"使用设备: {device}")
     
     # 模型参数
-    batch_size = 32
+    batch_size = int(self.config['training']['batch_size'])
     input_size = X_train.shape[1]
     horizon = y_train.shape[1]
     num_features = X_train.shape[2]
     
     print(f"模型参数: input_size={input_size}, horizon={horizon}, num_features={num_features}")
     
-    # 训练PatchTST（快速模式）
+    # 训练PatchTST（快速
+    #
+    # 模式）
     print("\n训练PatchTST模型...")
     patchtst = PatchTST(input_size=input_size, horizon=horizon, num_features=num_features)
-    patchtst_train_loss = train_model_quick(patchtst, X_train, y_train, device, epochs=5)
+    patchtst_train_loss = self.train_model_quick(patchtst_model, X_train, y_train,
+                                                 epochs=self.config['optimization']['tuning_epochs']),
     
     # 训练NHITS（快速模式）
     print("\n训练NHITS模型...")
     nhits = NHITS(input_size=input_size, horizon=horizon, num_features=num_features)
-    nhits_train_loss = train_model_quick(nhits, X_train, y_train, device, epochs=5)
+    nhits_train_loss = self.train_model_quick(nhits_model, X_train, y_train,
+                                              epochs=self.config['optimization']['tuning_epochs']),
     
     # 验证集预测
     print("\n验证集预测...")
@@ -117,14 +135,30 @@ def validate_models_quick(X_train, y_train, X_val, y_val):
     return patchtst, nhits, patchtst_pred, nhits_pred, patchtst_metrics, nhits_metrics
 
 
-def train_model_quick(model, X_train, y_train, device, epochs=5):
+def train_model_quick(self, model, X_train, y_train, epochs=None):
+    if epochs is None:
+        epochs = self.config['optimization']['tuning_epochs']
     """快速训练模型"""
+    # 添加输入验证检查
+    if model is None:
+        raise ValueError("train_model_quick: 模型不能为None。")
+
+    if X_train is None or y_train is None:
+        raise ValueError("train_model_quick: 训练数据不能为None。")
+
+    if len(X_train) == 0 or len(y_train) == 0:
+        raise ValueError("train_model_quick: 训练数据不能为空数组。")
+
+    if X_train.shape[0] != y_train.shape[0]:
+        raise ValueError("train_model_quick: X_train和y_train的样本数量不匹配。")
+
     model = model.to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=self.config['training']['learning_rate']),
     criterion = torch.nn.MSELoss()
     
     # 简单的数据加载器
-    batch_size = 32
+    batch_size = int(self.config['training']['batch_size'])
     n_batches = len(X_train) // batch_size
     
     train_losses = []
@@ -157,6 +191,16 @@ def train_model_quick(model, X_train, y_train, device, epochs=5):
 
 def validate_fusion_strategies(y_true, patchtst_pred, nhits_pred):
     """验证融合策略（使用真实数据）"""
+    # 添加输入验证检查
+    if y_true is None or patchtst_pred is None or nhits_pred is None:
+        raise ValueError("validate_fusion_strategies: 输入预测数据不能为None。")
+
+    if len(y_true) == 0 or len(patchtst_pred) == 0 or len(nhits_pred) == 0:
+        raise ValueError("validate_fusion_strategies: 输入预测数据不能为空数组。")
+
+    if y_true.shape != patchtst_pred.shape or y_true.shape != nhits_pred.shape:
+        raise ValueError("validate_fusion_strategies: 输入预测数据的形状不匹配。")
+
     print("\n" + "=" * 60)
     print("步骤3: 验证融合策略（MPA 20次迭代）")
     print("=" * 60)
@@ -176,7 +220,9 @@ def validate_fusion_strategies(y_true, patchtst_pred, nhits_pred):
     
     # 策略A：静态权重优化
     print("\n策略A: 静态权重优化...")
+
     static_optimizer = StaticWeightOptimizer(mpa_config)
+
     weights_a, score_a = static_optimizer.optimize_weights(expert_predictions, y_true)
     
     # 计算策略A预测
@@ -236,8 +282,8 @@ def generate_validation_plots(y_true, results):
     # 性能对比图
     print("生成性能对比图...")
     metrics = {
-        'PatchTST': results['experts']['patchtst_metrics'],
-        'NHITS': results['experts']['nhits_metrics'],
+        'PatchTST': results['experts']['patchtst']['metrics'],
+        'NHITS': results['experts']['nhits']['metrics'],
         'Strategy_A_Static': results['strategy_a']['metrics'],
         'Strategy_B_Stacking': results['strategy_b']['metrics']
     }

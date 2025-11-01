@@ -208,9 +208,10 @@ class PatchTST(nn.Module):
 class PatchTSTTrainer:
     """PatchTST训练器"""
 
-    def __init__(self, model: PatchTST, device: str = 'cuda' if torch.cuda.is_available() else 'cpu'):
+    def __init__(self, model: PatchTST, device: str = 'cuda' if torch.cuda.is_available() else 'cpu', config: dict = None):
         self.model = model.to(device)
         self.device = device
+        self.config = config
         self.optimizer = None
         self.scheduler = None
         self.criterion = nn.MSELoss()
@@ -227,7 +228,7 @@ class PatchTSTTrainer:
             self.optimizer,
             mode='min',
             factor=0.5,
-            patience=10
+            patience=int(self.config['training']['patience'])
         )
 
     def train_epoch(self, dataloader) -> float:
