@@ -1327,3 +1327,756 @@ dtype: int64
 2025-10-31 21:13:39,020 - models.nhits - INFO - Epoch  65 | train_loss=0.026565 | val_loss=0.047248
 2025-10-31 21:13:47,203 - models.nhits - INFO - Epoch  66 | train_loss=0.033255 | val_loss=0.042888
 2025-10-31 21:13:55,484 - models.nhits - INFO - Epoch  67 | train_loss=0.028648 | val_loss=0.040129
+2025-10-31 21:14:03,788 - models.nhits - INFO - Epoch  68 | train_loss=47.118838 | val_loss=0.042943
+2025-10-31 21:14:12,164 - models.nhits - INFO - Epoch  69 | train_loss=0.292673 | val_loss=0.176266
+2025-10-31 21:14:20,228 - models.nhits - INFO - Epoch  70 | train_loss=0.032399 | val_loss=0.051224
+2025-10-31 21:14:28,272 - models.nhits - INFO - Epoch  71 | train_loss=0.029789 | val_loss=0.044848
+2025-10-31 21:14:36,337 - models.nhits - INFO - Epoch  72 | train_loss=0.028059 | val_loss=0.038437
+2025-10-31 21:14:44,332 - models.nhits - INFO - Epoch  73 | train_loss=0.029904 | val_loss=0.037334
+2025-10-31 21:14:52,336 - models.nhits - INFO - Epoch  74 | train_loss=0.028920 | val_loss=0.043037
+2025-10-31 21:15:00,387 - models.nhits - INFO - Epoch  75 | train_loss=0.035737 | val_loss=0.073674
+2025-10-31 21:15:08,500 - models.nhits - INFO - Epoch  76 | train_loss=0.033365 | val_loss=0.044557
+2025-10-31 21:15:16,597 - models.nhits - INFO - Epoch  77 | train_loss=0.029004 | val_loss=0.044196
+2025-10-31 21:15:25,236 - models.nhits - INFO - Epoch  78 | train_loss=0.028099 | val_loss=0.039354
+2025-10-31 21:15:33,853 - models.nhits - INFO - Epoch  79 | train_loss=0.028453 | val_loss=0.052511
+2025-10-31 21:15:43,763 - models.nhits - INFO - Epoch  80 | train_loss=0.345870 | val_loss=0.071732
+2025-10-31 21:15:52,821 - models.nhits - INFO - Epoch  81 | train_loss=0.028659 | val_loss=0.042390
+2025-10-31 21:16:01,847 - models.nhits - INFO - Epoch  82 | train_loss=0.029802 | val_loss=0.053331
+2025-10-31 21:16:10,675 - models.nhits - INFO - Epoch  83 | train_loss=1.182726 | val_loss=0.038260
+2025-10-31 21:16:19,680 - models.nhits - INFO - Epoch  84 | train_loss=0.029512 | val_loss=0.103662
+2025-10-31 21:16:28,630 - models.nhits - INFO - Epoch  85 | train_loss=0.022505 | val_loss=0.038246
+2025-10-31 21:16:38,271 - models.nhits - INFO - Epoch  86 | train_loss=0.021942 | val_loss=0.037403
+2025-10-31 21:16:47,617 - models.nhits - INFO - Epoch  87 | train_loss=0.021236 | val_loss=0.033014
+2025-10-31 21:16:56,513 - models.nhits - INFO - Epoch  88 | train_loss=0.021628 | val_loss=0.035256
+2025-10-31 21:17:05,662 - models.nhits - INFO - Epoch  89 | train_loss=0.021789 | val_loss=0.040558
+2025-10-31 21:17:15,183 - models.nhits - INFO - Epoch  90 | train_loss=0.021653 | val_loss=0.041198
+2025-10-31 21:17:27,099 - models.nhits - INFO - Epoch  91 | train_loss=0.026253 | val_loss=0.034771
+2025-10-31 21:17:38,598 - models.nhits - INFO - Epoch  92 | train_loss=0.021398 | val_loss=0.037746
+2025-10-31 21:17:49,716 - models.nhits - INFO - Epoch  93 | train_loss=0.021297 | val_loss=0.036036
+2025-10-31 21:18:02,312 - models.nhits - INFO - Epoch  94 | train_loss=0.020776 | val_loss=0.038880
+2025-10-31 21:18:14,118 - models.nhits - INFO - Epoch  95 | train_loss=0.021056 | val_loss=0.042095
+2025-10-31 21:18:26,734 - models.nhits - INFO - Epoch  96 | train_loss=0.021390 | val_loss=0.041710
+2025-10-31 21:18:38,638 - models.nhits - INFO - Epoch  97 | train_loss=0.021283 | val_loss=0.035061
+2025-10-31 21:18:50,704 - models.nhits - INFO - Epoch  98 | train_loss=0.021016 | val_loss=0.036317
+2025-10-31 21:19:01,253 - models.nhits - INFO - Epoch  99 | train_loss=0.018275 | val_loss=0.035375
+2025-10-31 21:19:10,941 - models.nhits - INFO - Epoch 100 | train_loss=0.018281 | val_loss=0.035102
+2025-10-31 21:19:10,962 - models.patchtst - INFO - 模型已保存到: results\experiment_20251031_210257/patchtst_model.pth
+2025-10-31 21:19:10,993 - models.nhits - INFO - 模型已保存到: results\experiment_20251031_210257/nhits_model.pth
+2025-10-31 21:19:10,993 - main - INFO - 专家模型训练完成
+2025-10-31 21:19:10,997 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-10-31 21:19:10,997 - __main__ - ERROR - 实验失败: 'FloatingWindPlatformExperiment' object has no attribute 'implement_strategy_a_quick'
+2025-10-31 21:35:22,712 - __main__ - INFO - 初始化实验...
+2025-10-31 21:35:22,722 - main - INFO - 使用设备: cuda
+2025-10-31 21:35:22,723 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-10-31 21:35:22,724 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-10-31 21:35:22,724 - main - INFO - 开始数据加载和预处理...
+2025-10-31 21:35:22,732 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-10-31 21:35:24,917 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-10-31 21:35:24,921 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-10-31 21:35:24,924 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-10-31 21:35:24,926 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-10-31 21:35:24,935 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-10-31 21:35:24,935 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-10-31 21:35:25,033 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-10-31 21:35:25,033 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-10-31 21:35:25,033 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-10-31 21:35:25,033 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-10-31 21:35:25,034 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-10-31 21:35:25,109 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-10-31 21:35:25,109 - main - INFO - 数据预处理完成:
+2025-10-31 21:35:25,109 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-10-31 21:35:25,109 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-10-31 21:35:25,109 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-10-31 21:35:25,109 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-10-31 21:35:25,109 - main - INFO - 开始训练专家模型...
+2025-10-31 21:35:25,109 - main - INFO - 创建PatchTST模型...
+2025-10-31 21:35:25,157 - main - INFO - 创建NHITS模型...
+2025-10-31 21:35:25,226 - main - INFO - 训练PatchTST...
+2025-10-31 21:35:36,247 - models.patchtst - INFO - Epoch   1 | train_loss=0.928080 | val_loss=1.327706
+2025-10-31 21:35:43,130 - models.patchtst - INFO - Epoch   2 | train_loss=0.923948 | val_loss=1.327678
+2025-10-31 21:35:50,105 - models.patchtst - INFO - Epoch   3 | train_loss=0.924003 | val_loss=1.327883
+2025-10-31 21:35:57,080 - models.patchtst - INFO - Epoch   4 | train_loss=0.923788 | val_loss=1.327719
+2025-10-31 21:36:04,063 - models.patchtst - INFO - Epoch   5 | train_loss=0.924010 | val_loss=1.327766
+2025-10-31 21:36:11,071 - models.patchtst - INFO - Epoch   6 | train_loss=0.923948 | val_loss=1.327622
+2025-10-31 21:36:18,119 - models.patchtst - INFO - Epoch   7 | train_loss=0.924027 | val_loss=1.327860
+2025-10-31 21:36:25,173 - models.patchtst - INFO - Epoch   8 | train_loss=0.924009 | val_loss=1.327694
+2025-10-31 21:36:32,158 - models.patchtst - INFO - Epoch   9 | train_loss=0.923930 | val_loss=1.328088
+2025-10-31 21:36:39,204 - models.patchtst - INFO - Epoch  10 | train_loss=0.924005 | val_loss=1.327803
+2025-10-31 21:36:46,290 - models.patchtst - INFO - Epoch  11 | train_loss=0.923967 | val_loss=1.327930
+2025-10-31 21:36:53,328 - models.patchtst - INFO - Epoch  12 | train_loss=0.923949 | val_loss=1.327836
+2025-10-31 21:37:00,367 - models.patchtst - INFO - Epoch  13 | train_loss=0.923964 | val_loss=1.327859
+2025-10-31 21:37:07,380 - models.patchtst - INFO - Epoch  14 | train_loss=0.923942 | val_loss=1.327787
+2025-10-31 21:37:14,396 - models.patchtst - INFO - Epoch  15 | train_loss=0.924009 | val_loss=1.327747
+2025-10-31 21:37:21,412 - models.patchtst - INFO - Epoch  16 | train_loss=0.923937 | val_loss=1.327788
+2025-10-31 21:37:28,490 - models.patchtst - INFO - Epoch  17 | train_loss=0.923896 | val_loss=1.327752
+2025-10-31 21:37:35,493 - models.patchtst - INFO - Epoch  18 | train_loss=0.923872 | val_loss=1.327772
+2025-10-31 21:37:42,515 - models.patchtst - INFO - Epoch  19 | train_loss=0.923922 | val_loss=1.327764
+2025-10-31 21:37:49,607 - models.patchtst - INFO - Epoch  20 | train_loss=0.923960 | val_loss=1.327761
+2025-10-31 21:37:57,647 - models.patchtst - INFO - Epoch  21 | train_loss=0.923935 | val_loss=1.327817
+2025-10-31 21:37:57,648 - models.patchtst - INFO - Early stopping at epoch 21早停触发（连续15轮验证损失未下降），最佳验证损失：1.327622
+2025-10-31 21:37:57,648 - main - INFO - 训练NHITS...
+2025-10-31 21:38:05,923 - models.nhits - INFO - Epoch   1 | train_loss=750734327.880695 | val_loss=1147.181169
+2025-10-31 21:38:13,994 - models.nhits - INFO - Epoch   2 | train_loss=219.628506 | val_loss=3.259921
+2025-10-31 21:38:21,978 - models.nhits - INFO - Epoch   3 | train_loss=3.093509 | val_loss=0.466180
+2025-10-31 21:38:29,969 - models.nhits - INFO - Epoch   4 | train_loss=0.499598 | val_loss=0.387020
+2025-10-31 21:38:38,018 - models.nhits - INFO - Epoch   5 | train_loss=2.780571 | val_loss=0.164792
+2025-10-31 21:38:46,036 - models.nhits - INFO - Epoch   6 | train_loss=0.119748 | val_loss=0.129999
+2025-10-31 21:38:54,325 - models.nhits - INFO - Epoch   7 | train_loss=0.079232 | val_loss=0.073625
+2025-10-31 21:39:02,352 - models.nhits - INFO - Epoch   8 | train_loss=0.069915 | val_loss=0.075808
+2025-10-31 21:39:10,524 - models.nhits - INFO - Epoch   9 | train_loss=0.053183 | val_loss=0.078125
+2025-10-31 21:39:18,692 - models.nhits - INFO - Epoch  10 | train_loss=0.049835 | val_loss=0.052442
+2025-10-31 21:39:26,956 - models.nhits - INFO - Epoch  11 | train_loss=0.323329 | val_loss=1.056833
+2025-10-31 21:39:35,062 - models.nhits - INFO - Epoch  12 | train_loss=0.063813 | val_loss=0.054940
+2025-10-31 21:39:43,123 - models.nhits - INFO - Epoch  13 | train_loss=0.066745 | val_loss=0.060327
+2025-10-31 21:39:51,166 - models.nhits - INFO - Epoch  14 | train_loss=0.043901 | val_loss=0.047261
+2025-10-31 21:39:59,157 - models.nhits - INFO - Epoch  15 | train_loss=0.043636 | val_loss=0.051003
+2025-10-31 21:40:07,157 - models.nhits - INFO - Epoch  16 | train_loss=0.053498 | val_loss=0.058081
+2025-10-31 21:40:15,232 - models.nhits - INFO - Epoch  17 | train_loss=41.290640 | val_loss=0.041484
+2025-10-31 21:40:23,261 - models.nhits - INFO - Epoch  18 | train_loss=0.044726 | val_loss=0.046671
+2025-10-31 21:40:31,253 - models.nhits - INFO - Epoch  19 | train_loss=0.040665 | val_loss=0.042061
+2025-10-31 21:40:39,316 - models.nhits - INFO - Epoch  20 | train_loss=0.040241 | val_loss=0.051929
+2025-10-31 21:40:47,400 - models.nhits - INFO - Epoch  21 | train_loss=0.038298 | val_loss=0.041468
+2025-10-31 21:40:55,458 - models.nhits - INFO - Epoch  22 | train_loss=0.056028 | val_loss=0.054501
+2025-10-31 21:41:03,497 - models.nhits - INFO - Epoch  23 | train_loss=0.039917 | val_loss=0.049625
+2025-10-31 21:41:11,477 - models.nhits - INFO - Epoch  24 | train_loss=0.036927 | val_loss=0.052381
+2025-10-31 21:41:19,545 - models.nhits - INFO - Epoch  25 | train_loss=0.530970 | val_loss=0.983734
+2025-10-31 21:41:27,747 - models.nhits - INFO - Epoch  26 | train_loss=3.684395 | val_loss=0.049798
+2025-10-31 21:41:35,841 - models.nhits - INFO - Epoch  27 | train_loss=0.036922 | val_loss=0.056886
+2025-10-31 21:41:44,101 - models.nhits - INFO - Epoch  28 | train_loss=0.041543 | val_loss=0.082478
+2025-10-31 21:41:52,167 - models.nhits - INFO - Epoch  29 | train_loss=0.041158 | val_loss=0.047388
+2025-10-31 21:42:00,213 - models.nhits - INFO - Epoch  30 | train_loss=0.034233 | val_loss=0.042643
+2025-10-31 21:42:08,343 - models.nhits - INFO - Epoch  31 | train_loss=0.035207 | val_loss=0.045391
+2025-10-31 21:42:16,437 - models.nhits - INFO - Epoch  32 | train_loss=2.049623 | val_loss=0.047176
+2025-10-31 21:42:24,520 - models.nhits - INFO - Epoch  33 | train_loss=0.027206 | val_loss=0.037200
+2025-10-31 21:42:32,480 - models.nhits - INFO - Epoch  34 | train_loss=0.026762 | val_loss=0.038474
+2025-10-31 21:42:40,609 - models.nhits - INFO - Epoch  35 | train_loss=0.026601 | val_loss=0.035195
+2025-10-31 21:42:48,623 - models.nhits - INFO - Epoch  36 | train_loss=0.026784 | val_loss=0.038415
+2025-10-31 21:42:56,753 - models.nhits - INFO - Epoch  37 | train_loss=0.026438 | val_loss=0.034648
+2025-10-31 21:43:04,975 - models.nhits - INFO - Epoch  38 | train_loss=0.025260 | val_loss=0.037819
+2025-10-31 21:43:12,963 - models.nhits - INFO - Epoch  39 | train_loss=0.025626 | val_loss=0.040879
+2025-10-31 21:43:20,953 - models.nhits - INFO - Epoch  40 | train_loss=0.025284 | val_loss=0.036722
+2025-10-31 21:43:28,978 - models.nhits - INFO - Epoch  41 | train_loss=0.024860 | val_loss=0.038360
+2025-10-31 21:43:36,975 - models.nhits - INFO - Epoch  42 | train_loss=0.024856 | val_loss=0.040802
+2025-10-31 21:43:44,995 - models.nhits - INFO - Epoch  43 | train_loss=0.024898 | val_loss=0.035401
+2025-10-31 21:43:53,100 - models.nhits - INFO - Epoch  44 | train_loss=0.024233 | val_loss=0.038113
+2025-10-31 21:44:01,153 - models.nhits - INFO - Epoch  45 | train_loss=0.023733 | val_loss=0.034351
+2025-10-31 21:44:09,210 - models.nhits - INFO - Epoch  46 | train_loss=0.024146 | val_loss=0.033142
+2025-10-31 21:44:17,268 - models.nhits - INFO - Epoch  47 | train_loss=0.023382 | val_loss=0.038446
+2025-10-31 21:44:25,264 - models.nhits - INFO - Epoch  48 | train_loss=0.023586 | val_loss=0.035638
+2025-10-31 21:44:33,378 - models.nhits - INFO - Epoch  49 | train_loss=0.023987 | val_loss=0.045497
+2025-10-31 21:44:41,484 - models.nhits - INFO - Epoch  50 | train_loss=0.024298 | val_loss=0.036311
+2025-10-31 21:44:49,529 - models.nhits - INFO - Epoch  51 | train_loss=0.023075 | val_loss=0.037487
+2025-10-31 21:44:57,514 - models.nhits - INFO - Epoch  52 | train_loss=0.023425 | val_loss=0.034540
+2025-10-31 21:45:05,480 - models.nhits - INFO - Epoch  53 | train_loss=0.023126 | val_loss=0.031241
+2025-10-31 21:45:13,521 - models.nhits - INFO - Epoch  54 | train_loss=0.023178 | val_loss=0.031358
+2025-10-31 21:45:21,524 - models.nhits - INFO - Epoch  55 | train_loss=0.022751 | val_loss=0.033600
+2025-10-31 21:45:29,505 - models.nhits - INFO - Epoch  56 | train_loss=0.022466 | val_loss=0.035611
+2025-10-31 21:45:37,498 - models.nhits - INFO - Epoch  57 | train_loss=0.022414 | val_loss=0.037362
+2025-10-31 21:45:45,499 - models.nhits - INFO - Epoch  58 | train_loss=0.022200 | val_loss=0.033441
+2025-10-31 21:45:53,496 - models.nhits - INFO - Epoch  59 | train_loss=0.022509 | val_loss=0.038575
+2025-10-31 21:46:01,515 - models.nhits - INFO - Epoch  60 | train_loss=0.022503 | val_loss=0.034238
+2025-10-31 21:46:09,498 - models.nhits - INFO - Epoch  61 | train_loss=0.022206 | val_loss=0.034673
+2025-10-31 21:46:17,538 - models.nhits - INFO - Epoch  62 | train_loss=0.021825 | val_loss=0.032269
+2025-10-31 21:46:25,591 - models.nhits - INFO - Epoch  63 | train_loss=0.021565 | val_loss=0.036628
+2025-10-31 21:46:33,740 - models.nhits - INFO - Epoch  64 | train_loss=0.020868 | val_loss=0.033637
+2025-10-31 21:46:41,796 - models.nhits - INFO - Epoch  65 | train_loss=0.018204 | val_loss=0.030814
+2025-10-31 21:46:49,806 - models.nhits - INFO - Epoch  66 | train_loss=0.017910 | val_loss=0.030757
+2025-10-31 21:46:57,859 - models.nhits - INFO - Epoch  67 | train_loss=0.017932 | val_loss=0.032676
+2025-10-31 21:47:06,350 - models.nhits - INFO - Epoch  68 | train_loss=0.017505 | val_loss=0.029183
+2025-10-31 21:47:14,733 - models.nhits - INFO - Epoch  69 | train_loss=0.017170 | val_loss=0.028230
+2025-10-31 21:47:22,782 - models.nhits - INFO - Epoch  70 | train_loss=0.016828 | val_loss=0.032362
+2025-10-31 21:47:31,180 - models.nhits - INFO - Epoch  71 | train_loss=0.016723 | val_loss=0.028649
+2025-10-31 21:47:39,268 - models.nhits - INFO - Epoch  72 | train_loss=0.016132 | val_loss=0.031845
+2025-10-31 21:47:47,220 - models.nhits - INFO - Epoch  73 | train_loss=0.016794 | val_loss=0.027572
+2025-10-31 21:47:55,222 - models.nhits - INFO - Epoch  74 | train_loss=0.015894 | val_loss=0.034374
+2025-10-31 21:48:03,507 - models.nhits - INFO - Epoch  75 | train_loss=0.016519 | val_loss=0.032052
+2025-10-31 21:48:11,493 - models.nhits - INFO - Epoch  76 | train_loss=0.015864 | val_loss=0.028804
+2025-10-31 21:48:19,476 - models.nhits - INFO - Epoch  77 | train_loss=0.015201 | val_loss=0.027263
+2025-10-31 21:48:27,525 - models.nhits - INFO - Epoch  78 | train_loss=0.015400 | val_loss=0.035192
+2025-10-31 21:48:35,692 - models.nhits - INFO - Epoch  79 | train_loss=0.015251 | val_loss=0.028276
+2025-10-31 21:48:43,720 - models.nhits - INFO - Epoch  80 | train_loss=0.014802 | val_loss=0.033015
+2025-10-31 21:48:51,807 - models.nhits - INFO - Epoch  81 | train_loss=0.014677 | val_loss=0.027904
+2025-10-31 21:48:59,871 - models.nhits - INFO - Epoch  82 | train_loss=0.014979 | val_loss=0.028131
+2025-10-31 21:49:07,876 - models.nhits - INFO - Epoch  83 | train_loss=0.014928 | val_loss=0.028661
+2025-10-31 21:49:15,851 - models.nhits - INFO - Epoch  84 | train_loss=0.014443 | val_loss=0.032063
+2025-10-31 21:49:23,847 - models.nhits - INFO - Epoch  85 | train_loss=0.014595 | val_loss=0.026778
+2025-10-31 21:49:31,858 - models.nhits - INFO - Epoch  86 | train_loss=0.014308 | val_loss=0.029680
+2025-10-31 21:49:39,843 - models.nhits - INFO - Epoch  87 | train_loss=0.014210 | val_loss=0.028854
+2025-10-31 21:49:47,871 - models.nhits - INFO - Epoch  88 | train_loss=0.014508 | val_loss=0.033698
+2025-10-31 21:49:55,838 - models.nhits - INFO - Epoch  89 | train_loss=0.013935 | val_loss=0.027622
+2025-10-31 21:50:03,905 - models.nhits - INFO - Epoch  90 | train_loss=0.014211 | val_loss=0.028492
+2025-10-31 21:50:11,826 - models.nhits - INFO - Epoch  91 | train_loss=0.014022 | val_loss=0.028714
+2025-10-31 21:50:19,881 - models.nhits - INFO - Epoch  92 | train_loss=0.014939 | val_loss=0.031928
+2025-10-31 21:50:27,919 - models.nhits - INFO - Epoch  93 | train_loss=0.013785 | val_loss=0.026364
+2025-10-31 21:50:35,921 - models.nhits - INFO - Epoch  94 | train_loss=0.013593 | val_loss=0.028734
+2025-10-31 21:50:43,926 - models.nhits - INFO - Epoch  95 | train_loss=0.014233 | val_loss=0.027994
+2025-10-31 21:50:51,886 - models.nhits - INFO - Epoch  96 | train_loss=0.013488 | val_loss=0.029180
+2025-10-31 21:50:59,964 - models.nhits - INFO - Epoch  97 | train_loss=0.013688 | val_loss=0.026720
+2025-10-31 21:51:07,938 - models.nhits - INFO - Epoch  98 | train_loss=0.013453 | val_loss=0.028643
+2025-10-31 21:51:15,951 - models.nhits - INFO - Epoch  99 | train_loss=0.013499 | val_loss=0.025335
+2025-10-31 21:51:23,950 - models.nhits - INFO - Epoch 100 | train_loss=0.013538 | val_loss=0.032053
+2025-10-31 21:51:23,980 - models.patchtst - INFO - 模型已保存到: results\experiment_20251031_213522/patchtst_model.pth
+2025-10-31 21:51:24,012 - models.nhits - INFO - 模型已保存到: results\experiment_20251031_213522/nhits_model.pth
+2025-10-31 21:51:24,012 - main - INFO - 专家模型训练完成
+2025-10-31 21:51:24,016 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-10-31 21:51:24,016 - main - INFO - 实现策略A快速模式：静态优化权重（max_iterations=20）...
+2025-10-31 21:51:24,016 - __main__ - ERROR - 实验失败: 'FloatingWindPlatformExperiment' object has no attribute 'expert_predictions'
+2025-11-01 12:49:07,101 - __main__ - INFO - 初始化实验...
+2025-11-01 12:49:07,112 - main - INFO - 使用设备: cuda
+2025-11-01 12:49:07,115 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-11-01 12:49:07,115 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-11-01 12:49:07,115 - main - INFO - 开始数据加载和预处理...
+2025-11-01 12:49:07,123 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-11-01 12:49:09,283 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-11-01 12:49:09,285 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 12:49:09,288 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-11-01 12:49:09,290 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 12:49:09,297 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-11-01 12:49:09,297 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-11-01 12:49:09,368 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-11-01 12:49:09,368 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-11-01 12:49:09,368 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-11-01 12:49:09,369 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-11-01 12:49:09,369 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-11-01 12:49:09,435 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-11-01 12:49:09,435 - main - INFO - 数据预处理完成:
+2025-11-01 12:49:09,435 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-11-01 12:49:09,435 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-11-01 12:49:09,435 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-11-01 12:49:09,435 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-11-01 12:49:09,435 - main - INFO - 开始训练专家模型...
+2025-11-01 12:49:09,435 - main - INFO - 创建PatchTST模型...
+2025-11-01 12:49:09,474 - main - INFO - 创建NHITS模型...
+2025-11-01 12:49:09,540 - main - INFO - 训练PatchTST...
+2025-11-01 12:49:19,540 - models.patchtst - INFO - Epoch   1 | train_loss=0.928160 | val_loss=1.327867
+2025-11-01 12:49:26,437 - models.patchtst - INFO - Epoch   2 | train_loss=0.923977 | val_loss=1.327633
+2025-11-01 12:49:33,561 - models.patchtst - INFO - Epoch   3 | train_loss=0.924023 | val_loss=1.327864
+2025-11-01 12:49:40,452 - models.patchtst - INFO - Epoch   4 | train_loss=0.924040 | val_loss=1.327717
+2025-11-01 12:49:47,380 - models.patchtst - INFO - Epoch   5 | train_loss=0.923992 | val_loss=1.327835
+2025-11-01 12:49:54,283 - models.patchtst - INFO - Epoch   6 | train_loss=0.923937 | val_loss=1.327911
+2025-11-01 12:50:01,246 - models.patchtst - INFO - Epoch   7 | train_loss=0.923977 | val_loss=1.327600
+2025-11-01 12:50:08,191 - models.patchtst - INFO - Epoch   8 | train_loss=0.924023 | val_loss=1.327745
+2025-11-01 12:50:15,175 - models.patchtst - INFO - Epoch   9 | train_loss=0.924023 | val_loss=1.327648
+2025-11-01 12:50:22,150 - models.patchtst - INFO - Epoch  10 | train_loss=0.924027 | val_loss=1.327803
+2025-11-01 12:50:29,170 - models.patchtst - INFO - Epoch  11 | train_loss=0.923944 | val_loss=1.327698
+2025-11-01 12:50:36,193 - models.patchtst - INFO - Epoch  12 | train_loss=0.924035 | val_loss=1.327864
+2025-11-01 12:50:43,244 - models.patchtst - INFO - Epoch  13 | train_loss=0.923940 | val_loss=1.327756
+2025-11-01 12:50:50,329 - models.patchtst - INFO - Epoch  14 | train_loss=0.923930 | val_loss=1.327724
+2025-11-01 12:50:57,482 - models.patchtst - INFO - Epoch  15 | train_loss=0.923906 | val_loss=1.327764
+2025-11-01 12:51:04,626 - models.patchtst - INFO - Epoch  16 | train_loss=0.923920 | val_loss=1.327838
+2025-11-01 12:51:11,667 - models.patchtst - INFO - Epoch  17 | train_loss=0.923869 | val_loss=1.327943
+2025-11-01 12:51:18,765 - models.patchtst - INFO - Epoch  18 | train_loss=0.923948 | val_loss=1.327841
+2025-11-01 12:51:25,836 - models.patchtst - INFO - Epoch  19 | train_loss=0.923870 | val_loss=1.327704
+2025-11-01 12:51:32,914 - models.patchtst - INFO - Epoch  20 | train_loss=0.924042 | val_loss=1.327717
+2025-11-01 12:51:39,980 - models.patchtst - INFO - Epoch  21 | train_loss=0.923831 | val_loss=1.327767
+2025-11-01 12:51:47,064 - models.patchtst - INFO - Epoch  22 | train_loss=0.923885 | val_loss=1.327804
+2025-11-01 12:51:47,064 - models.patchtst - INFO - Early stopping at epoch 22早停触发（连续15轮验证损失未下降），最佳验证损失：1.327600
+2025-11-01 12:51:47,064 - main - INFO - 训练NHITS...
+2025-11-01 12:51:54,955 - models.nhits - INFO - Epoch   1 | train_loss=290956859.716107 | val_loss=462.947290
+2025-11-01 12:52:02,875 - models.nhits - INFO - Epoch   2 | train_loss=116.449617 | val_loss=1.888875
+2025-11-01 12:52:10,790 - models.nhits - INFO - Epoch   3 | train_loss=0.570158 | val_loss=0.121802
+2025-11-01 12:52:18,633 - models.nhits - INFO - Epoch   4 | train_loss=0.077018 | val_loss=0.067636
+2025-11-01 12:52:26,505 - models.nhits - INFO - Epoch   5 | train_loss=0.043173 | val_loss=0.044596
+2025-11-01 12:52:34,364 - models.nhits - INFO - Epoch   6 | train_loss=0.040320 | val_loss=0.058222
+2025-11-01 12:52:42,230 - models.nhits - INFO - Epoch   7 | train_loss=10.761784 | val_loss=0.067059
+2025-11-01 12:52:50,092 - models.nhits - INFO - Epoch   8 | train_loss=0.034723 | val_loss=0.047695
+2025-11-01 12:52:57,917 - models.nhits - INFO - Epoch   9 | train_loss=0.091340 | val_loss=0.052904
+2025-11-01 12:53:05,772 - models.nhits - INFO - Epoch  10 | train_loss=0.034603 | val_loss=0.039610
+2025-11-01 12:53:13,600 - models.nhits - INFO - Epoch  11 | train_loss=0.036037 | val_loss=0.053623
+2025-11-01 12:53:21,528 - models.nhits - INFO - Epoch  12 | train_loss=0.035705 | val_loss=0.050852
+2025-11-01 12:53:29,597 - models.nhits - INFO - Epoch  13 | train_loss=0.032355 | val_loss=0.041997
+2025-11-01 12:53:37,862 - models.nhits - INFO - Epoch  14 | train_loss=0.041507 | val_loss=0.040738
+2025-11-01 12:53:46,052 - models.nhits - INFO - Epoch  15 | train_loss=0.033314 | val_loss=0.039980
+2025-11-01 12:53:54,152 - models.nhits - INFO - Epoch  16 | train_loss=1.477184 | val_loss=0.059124
+2025-11-01 12:54:02,275 - models.nhits - INFO - Epoch  17 | train_loss=0.031252 | val_loss=0.055952
+2025-11-01 12:54:10,457 - models.nhits - INFO - Epoch  18 | train_loss=0.028799 | val_loss=0.041333
+2025-11-01 12:54:18,622 - models.nhits - INFO - Epoch  19 | train_loss=0.052183 | val_loss=0.035773
+2025-11-01 12:54:26,876 - models.nhits - INFO - Epoch  20 | train_loss=0.027889 | val_loss=0.038444
+2025-11-01 12:54:34,920 - models.nhits - INFO - Epoch  21 | train_loss=0.240175 | val_loss=0.046370
+2025-11-01 12:54:42,908 - models.nhits - INFO - Epoch  22 | train_loss=0.057335 | val_loss=0.057435
+2025-11-01 12:54:50,839 - models.nhits - INFO - Epoch  23 | train_loss=0.034465 | val_loss=0.048274
+2025-11-01 12:54:58,696 - models.nhits - INFO - Epoch  24 | train_loss=0.027661 | val_loss=0.055764
+2025-11-01 12:55:06,534 - models.nhits - INFO - Epoch  25 | train_loss=0.043883 | val_loss=0.038926
+2025-11-01 12:55:14,377 - models.nhits - INFO - Epoch  26 | train_loss=0.026462 | val_loss=0.049364
+2025-11-01 12:55:22,185 - models.nhits - INFO - Epoch  27 | train_loss=2.762483 | val_loss=0.037563
+2025-11-01 12:55:30,007 - models.nhits - INFO - Epoch  28 | train_loss=0.027060 | val_loss=0.047353
+2025-11-01 12:55:37,826 - models.nhits - INFO - Epoch  29 | train_loss=6.535511 | val_loss=0.037760
+2025-11-01 12:55:45,647 - models.nhits - INFO - Epoch  30 | train_loss=0.121939 | val_loss=0.040947
+2025-11-01 12:55:53,464 - models.nhits - INFO - Epoch  31 | train_loss=0.019974 | val_loss=0.032040
+2025-11-01 12:56:01,291 - models.nhits - INFO - Epoch  32 | train_loss=0.020352 | val_loss=0.037105
+2025-11-01 12:56:09,093 - models.nhits - INFO - Epoch  33 | train_loss=0.021009 | val_loss=0.030133
+2025-11-01 12:56:16,882 - models.nhits - INFO - Epoch  34 | train_loss=0.018929 | val_loss=0.033228
+2025-11-01 12:56:24,692 - models.nhits - INFO - Epoch  35 | train_loss=0.019023 | val_loss=0.030832
+2025-11-01 12:56:32,544 - models.nhits - INFO - Epoch  36 | train_loss=0.017890 | val_loss=0.026306
+2025-11-01 12:56:40,364 - models.nhits - INFO - Epoch  37 | train_loss=0.017765 | val_loss=0.035099
+2025-11-01 12:56:48,180 - models.nhits - INFO - Epoch  38 | train_loss=0.089957 | val_loss=0.030087
+2025-11-01 12:56:56,001 - models.nhits - INFO - Epoch  39 | train_loss=0.018122 | val_loss=0.030976
+2025-11-01 12:57:03,801 - models.nhits - INFO - Epoch  40 | train_loss=0.018302 | val_loss=0.029281
+2025-11-01 12:57:11,625 - models.nhits - INFO - Epoch  41 | train_loss=0.018162 | val_loss=0.035956
+2025-11-01 12:57:19,416 - models.nhits - INFO - Epoch  42 | train_loss=0.017872 | val_loss=0.027086
+2025-11-01 12:57:27,226 - models.nhits - INFO - Epoch  43 | train_loss=0.016875 | val_loss=0.031939
+2025-11-01 12:57:35,004 - models.nhits - INFO - Epoch  44 | train_loss=0.023480 | val_loss=0.025426
+2025-11-01 12:57:42,816 - models.nhits - INFO - Epoch  45 | train_loss=0.017651 | val_loss=0.023383
+2025-11-01 12:57:50,609 - models.nhits - INFO - Epoch  46 | train_loss=0.016005 | val_loss=0.029439
+2025-11-01 12:57:58,441 - models.nhits - INFO - Epoch  47 | train_loss=0.016648 | val_loss=0.023137
+2025-11-01 12:58:06,240 - models.nhits - INFO - Epoch  48 | train_loss=0.015993 | val_loss=0.026039
+2025-11-01 12:58:14,065 - models.nhits - INFO - Epoch  49 | train_loss=0.020446 | val_loss=0.029632
+2025-11-01 12:58:21,866 - models.nhits - INFO - Epoch  50 | train_loss=0.018325 | val_loss=0.033318
+2025-11-01 12:58:29,662 - models.nhits - INFO - Epoch  51 | train_loss=0.015999 | val_loss=0.034175
+2025-11-01 12:58:37,866 - models.nhits - INFO - Epoch  52 | train_loss=0.022288 | val_loss=0.026215
+2025-11-01 12:58:45,936 - models.nhits - INFO - Epoch  53 | train_loss=0.016553 | val_loss=0.027416
+2025-11-01 12:58:54,036 - models.nhits - INFO - Epoch  54 | train_loss=0.016327 | val_loss=0.027439
+2025-11-01 12:59:02,114 - models.nhits - INFO - Epoch  55 | train_loss=0.014880 | val_loss=0.027410
+2025-11-01 12:59:10,179 - models.nhits - INFO - Epoch  56 | train_loss=0.015663 | val_loss=0.025473
+2025-11-01 12:59:18,304 - models.nhits - INFO - Epoch  57 | train_loss=0.016978 | val_loss=0.027197
+2025-11-01 12:59:26,500 - models.nhits - INFO - Epoch  58 | train_loss=0.015043 | val_loss=0.023880
+2025-11-01 12:59:34,495 - models.nhits - INFO - Epoch  59 | train_loss=0.012421 | val_loss=0.022540
+2025-11-01 12:59:42,580 - models.nhits - INFO - Epoch  60 | train_loss=0.011946 | val_loss=0.021107
+2025-11-01 12:59:50,649 - models.nhits - INFO - Epoch  61 | train_loss=0.011677 | val_loss=0.021332
+2025-11-01 12:59:58,699 - models.nhits - INFO - Epoch  62 | train_loss=0.011729 | val_loss=0.022007
+2025-11-01 13:00:06,832 - models.nhits - INFO - Epoch  63 | train_loss=0.011307 | val_loss=0.019738
+2025-11-01 13:00:14,887 - models.nhits - INFO - Epoch  64 | train_loss=0.011672 | val_loss=0.021060
+2025-11-01 13:00:22,981 - models.nhits - INFO - Epoch  65 | train_loss=0.011681 | val_loss=0.023333
+2025-11-01 13:00:31,134 - models.nhits - INFO - Epoch  66 | train_loss=0.012046 | val_loss=0.024351
+2025-11-01 13:00:39,315 - models.nhits - INFO - Epoch  67 | train_loss=0.011903 | val_loss=0.023068
+2025-11-01 13:00:47,430 - models.nhits - INFO - Epoch  68 | train_loss=0.011181 | val_loss=0.020099
+2025-11-01 13:00:55,517 - models.nhits - INFO - Epoch  69 | train_loss=0.011356 | val_loss=0.021438
+2025-11-01 13:01:03,733 - models.nhits - INFO - Epoch  70 | train_loss=0.011477 | val_loss=0.022240
+2025-11-01 13:01:11,864 - models.nhits - INFO - Epoch  71 | train_loss=0.011297 | val_loss=0.018876
+2025-11-01 13:01:20,084 - models.nhits - INFO - Epoch  72 | train_loss=0.011627 | val_loss=0.020929
+2025-11-01 13:01:28,192 - models.nhits - INFO - Epoch  73 | train_loss=0.011070 | val_loss=0.021237
+2025-11-01 13:01:36,554 - models.nhits - INFO - Epoch  74 | train_loss=0.011499 | val_loss=0.020259
+2025-11-01 13:01:44,660 - models.nhits - INFO - Epoch  75 | train_loss=0.010791 | val_loss=0.020879
+2025-11-01 13:01:52,783 - models.nhits - INFO - Epoch  76 | train_loss=0.011206 | val_loss=0.019120
+2025-11-01 13:02:00,953 - models.nhits - INFO - Epoch  77 | train_loss=0.010842 | val_loss=0.018999
+2025-11-01 13:02:09,040 - models.nhits - INFO - Epoch  78 | train_loss=0.010609 | val_loss=0.018814
+2025-11-01 13:02:17,140 - models.nhits - INFO - Epoch  79 | train_loss=0.010517 | val_loss=0.022145
+2025-11-01 13:02:25,409 - models.nhits - INFO - Epoch  80 | train_loss=0.011043 | val_loss=0.021087
+2025-11-01 13:02:33,531 - models.nhits - INFO - Epoch  81 | train_loss=0.010544 | val_loss=0.021398
+2025-11-01 13:02:41,710 - models.nhits - INFO - Epoch  82 | train_loss=0.010729 | val_loss=0.020781
+2025-11-01 13:02:49,815 - models.nhits - INFO - Epoch  83 | train_loss=0.010720 | val_loss=0.020135
+2025-11-01 13:02:57,920 - models.nhits - INFO - Epoch  84 | train_loss=0.010833 | val_loss=0.023150
+2025-11-01 13:03:06,105 - models.nhits - INFO - Epoch  85 | train_loss=0.010521 | val_loss=0.023013
+2025-11-01 13:03:14,196 - models.nhits - INFO - Epoch  86 | train_loss=0.010664 | val_loss=0.019448
+2025-11-01 13:03:22,325 - models.nhits - INFO - Epoch  87 | train_loss=0.010572 | val_loss=0.022198
+2025-11-01 13:03:30,437 - models.nhits - INFO - Epoch  88 | train_loss=0.010958 | val_loss=0.023271
+2025-11-01 13:03:38,662 - models.nhits - INFO - Epoch  89 | train_loss=0.010452 | val_loss=0.019636
+2025-11-01 13:03:46,808 - models.nhits - INFO - Epoch  90 | train_loss=0.009408 | val_loss=0.019175
+2025-11-01 13:03:54,972 - models.nhits - INFO - Epoch  91 | train_loss=0.009111 | val_loss=0.018454
+2025-11-01 13:04:03,077 - models.nhits - INFO - Epoch  92 | train_loss=0.008837 | val_loss=0.018459
+2025-11-01 13:04:11,211 - models.nhits - INFO - Epoch  93 | train_loss=0.008856 | val_loss=0.019128
+2025-11-01 13:04:19,384 - models.nhits - INFO - Epoch  94 | train_loss=0.008810 | val_loss=0.019997
+2025-11-01 13:04:27,600 - models.nhits - INFO - Epoch  95 | train_loss=0.008518 | val_loss=0.018201
+2025-11-01 13:04:35,732 - models.nhits - INFO - Epoch  96 | train_loss=0.008493 | val_loss=0.020526
+2025-11-01 13:04:43,905 - models.nhits - INFO - Epoch  97 | train_loss=0.008686 | val_loss=0.018398
+2025-11-01 13:04:52,043 - models.nhits - INFO - Epoch  98 | train_loss=0.008193 | val_loss=0.020833
+2025-11-01 13:05:00,323 - models.nhits - INFO - Epoch  99 | train_loss=0.008286 | val_loss=0.018140
+2025-11-01 13:05:08,525 - models.nhits - INFO - Epoch 100 | train_loss=0.008069 | val_loss=0.018472
+2025-11-01 13:05:08,541 - models.patchtst - INFO - 模型已保存到: results\experiment_20251101_124907/patchtst_model.pth
+2025-11-01 13:05:08,570 - models.nhits - INFO - 模型已保存到: results\experiment_20251101_124907/nhits_model.pth
+2025-11-01 13:05:08,570 - main - INFO - 专家模型训练完成
+2025-11-01 13:05:08,573 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-11-01 13:05:08,573 - main - INFO - 获取专家模型预测...
+2025-11-01 13:05:21,527 - main - INFO - 专家预测获取完成
+2025-11-01 13:05:21,528 - main - INFO - 实现策略A快速模式：静态优化权重（max_iterations=20）...
+2025-11-01 13:05:22,194 - __main__ - ERROR - 实验失败: name 'StaticWeightOptimizer' is not defined
+2025-11-01 14:46:37,603 - __main__ - INFO - 初始化实验...
+2025-11-01 14:46:37,612 - main - INFO - 使用设备: cuda
+2025-11-01 14:46:37,614 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-11-01 14:46:37,614 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-11-01 14:46:37,614 - main - INFO - 开始数据加载和预处理...
+2025-11-01 14:46:37,623 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-11-01 14:46:39,751 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-11-01 14:46:39,754 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 14:46:39,757 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-11-01 14:46:39,758 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 14:46:39,764 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-11-01 14:46:39,764 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-11-01 14:46:39,837 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-11-01 14:46:39,837 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-11-01 14:46:39,837 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-11-01 14:46:39,837 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-11-01 14:46:39,838 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-11-01 14:46:39,913 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-11-01 14:46:39,913 - main - INFO - 数据预处理完成:
+2025-11-01 14:46:39,913 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-11-01 14:46:39,913 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-11-01 14:46:39,914 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-11-01 14:46:39,914 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-11-01 14:46:39,914 - main - INFO - 开始训练专家模型...
+2025-11-01 14:46:39,914 - main - INFO - 创建PatchTST模型...
+2025-11-01 14:46:39,953 - main - INFO - 创建NHITS模型...
+2025-11-01 14:46:40,012 - main - INFO - 训练PatchTST...
+2025-11-01 14:46:50,068 - models.patchtst - INFO - Epoch   1 | train_loss=0.926848 | val_loss=1.327756
+2025-11-01 14:46:57,058 - models.patchtst - INFO - Epoch   2 | train_loss=0.923914 | val_loss=1.327630
+2025-11-01 14:47:04,033 - models.patchtst - INFO - Epoch   3 | train_loss=0.924053 | val_loss=1.327828
+2025-11-01 14:47:11,058 - models.patchtst - INFO - Epoch   4 | train_loss=0.924016 | val_loss=1.327830
+2025-11-01 14:47:18,054 - models.patchtst - INFO - Epoch   5 | train_loss=0.923982 | val_loss=1.327889
+2025-11-01 14:47:25,216 - models.patchtst - INFO - Epoch   6 | train_loss=0.923917 | val_loss=1.327838
+2025-11-01 14:47:32,396 - models.patchtst - INFO - Epoch   7 | train_loss=0.924012 | val_loss=1.327730
+2025-11-01 14:47:39,655 - models.patchtst - INFO - Epoch   8 | train_loss=0.923979 | val_loss=1.327683
+2025-11-01 14:47:46,757 - models.patchtst - INFO - Epoch   9 | train_loss=0.924012 | val_loss=1.327728
+2025-11-01 14:47:53,910 - models.patchtst - INFO - Epoch  10 | train_loss=0.923918 | val_loss=1.328104
+2025-11-01 14:48:01,020 - models.patchtst - INFO - Epoch  11 | train_loss=0.923991 | val_loss=1.327719
+2025-11-01 14:48:08,101 - models.patchtst - INFO - Epoch  12 | train_loss=0.923967 | val_loss=1.327857
+2025-11-01 14:48:15,181 - models.patchtst - INFO - Epoch  13 | train_loss=0.923976 | val_loss=1.327856
+2025-11-01 14:48:22,264 - models.patchtst - INFO - Epoch  14 | train_loss=0.923927 | val_loss=1.327776
+2025-11-01 14:48:29,343 - models.patchtst - INFO - Epoch  15 | train_loss=0.923901 | val_loss=1.327753
+2025-11-01 14:48:36,431 - models.patchtst - INFO - Epoch  16 | train_loss=0.923908 | val_loss=1.327787
+2025-11-01 14:48:43,620 - models.patchtst - INFO - Epoch  17 | train_loss=0.923928 | val_loss=1.327798
+2025-11-01 14:48:43,620 - models.patchtst - INFO - Early stopping at epoch 17早停触发（连续15轮验证损失未下降），最佳验证损失：1.327630
+2025-11-01 14:48:43,620 - main - INFO - 训练NHITS...
+2025-11-01 14:48:51,643 - models.nhits - INFO - Epoch   1 | train_loss=511531947.700916 | val_loss=1246.921167
+2025-11-01 14:48:59,614 - models.nhits - INFO - Epoch   2 | train_loss=103.820659 | val_loss=1.261165
+2025-11-01 14:49:07,639 - models.nhits - INFO - Epoch   3 | train_loss=1.161314 | val_loss=0.133873
+2025-11-01 14:49:15,662 - models.nhits - INFO - Epoch   4 | train_loss=0.155268 | val_loss=0.054662
+2025-11-01 14:49:23,665 - models.nhits - INFO - Epoch   5 | train_loss=0.049227 | val_loss=0.053077
+2025-11-01 14:49:31,628 - models.nhits - INFO - Epoch   6 | train_loss=0.039488 | val_loss=0.058875
+2025-11-01 14:49:39,620 - models.nhits - INFO - Epoch   7 | train_loss=0.247428 | val_loss=0.048047
+2025-11-01 14:49:47,569 - models.nhits - INFO - Epoch   8 | train_loss=0.035007 | val_loss=0.043007
+2025-11-01 14:49:55,537 - models.nhits - INFO - Epoch   9 | train_loss=0.036265 | val_loss=0.060841
+2025-11-01 14:50:03,501 - models.nhits - INFO - Epoch  10 | train_loss=0.078076 | val_loss=0.042370
+2025-11-01 14:50:11,440 - models.nhits - INFO - Epoch  11 | train_loss=0.031104 | val_loss=0.060357
+2025-11-01 14:50:19,407 - models.nhits - INFO - Epoch  12 | train_loss=0.033086 | val_loss=0.075760
+2025-11-01 14:50:27,347 - models.nhits - INFO - Epoch  13 | train_loss=0.030572 | val_loss=0.039600
+2025-11-01 14:50:35,300 - models.nhits - INFO - Epoch  14 | train_loss=0.079453 | val_loss=0.061929
+2025-11-01 14:50:43,249 - models.nhits - INFO - Epoch  15 | train_loss=0.031319 | val_loss=0.039196
+2025-11-01 14:50:51,182 - models.nhits - INFO - Epoch  16 | train_loss=0.028459 | val_loss=0.041849
+2025-11-01 14:50:59,145 - models.nhits - INFO - Epoch  17 | train_loss=0.029062 | val_loss=0.045885
+2025-11-01 14:51:07,094 - models.nhits - INFO - Epoch  18 | train_loss=0.284606 | val_loss=0.036131
+2025-11-01 14:51:15,048 - models.nhits - INFO - Epoch  19 | train_loss=0.065743 | val_loss=0.136267
+2025-11-01 14:51:22,986 - models.nhits - INFO - Epoch  20 | train_loss=0.031938 | val_loss=0.049211
+2025-11-01 14:51:30,922 - models.nhits - INFO - Epoch  21 | train_loss=0.030589 | val_loss=0.037819
+2025-11-01 14:51:38,828 - models.nhits - INFO - Epoch  22 | train_loss=0.026381 | val_loss=0.040536
+2025-11-01 14:51:46,744 - models.nhits - INFO - Epoch  23 | train_loss=1.133351 | val_loss=0.034066
+2025-11-01 14:51:54,661 - models.nhits - INFO - Epoch  24 | train_loss=0.030507 | val_loss=0.295925
+2025-11-01 14:52:02,627 - models.nhits - INFO - Epoch  25 | train_loss=0.034163 | val_loss=0.046096
+2025-11-01 14:52:10,602 - models.nhits - INFO - Epoch  26 | train_loss=0.031859 | val_loss=0.037207
+2025-11-01 14:52:18,588 - models.nhits - INFO - Epoch  27 | train_loss=0.026809 | val_loss=0.033879
+2025-11-01 14:52:26,570 - models.nhits - INFO - Epoch  28 | train_loss=0.460372 | val_loss=0.032977
+2025-11-01 14:52:34,552 - models.nhits - INFO - Epoch  29 | train_loss=0.027225 | val_loss=0.046186
+2025-11-01 14:52:42,551 - models.nhits - INFO - Epoch  30 | train_loss=0.065559 | val_loss=0.034227
+2025-11-01 14:52:50,538 - models.nhits - INFO - Epoch  31 | train_loss=0.053585 | val_loss=3.699667
+2025-11-01 14:52:58,551 - models.nhits - INFO - Epoch  32 | train_loss=0.340715 | val_loss=0.037135
+2025-11-01 14:53:06,512 - models.nhits - INFO - Epoch  33 | train_loss=0.028702 | val_loss=0.032510
+2025-11-01 14:53:14,481 - models.nhits - INFO - Epoch  34 | train_loss=0.027967 | val_loss=0.041620
+2025-11-01 14:53:22,500 - models.nhits - INFO - Epoch  35 | train_loss=0.092132 | val_loss=0.031015
+2025-11-01 14:53:30,494 - models.nhits - INFO - Epoch  36 | train_loss=0.038588 | val_loss=0.046375
+2025-11-01 14:53:38,984 - models.nhits - INFO - Epoch  37 | train_loss=0.026566 | val_loss=0.041941
+2025-11-01 14:53:47,534 - models.nhits - INFO - Epoch  38 | train_loss=0.050538 | val_loss=0.040394
+2025-11-01 14:53:55,945 - models.nhits - INFO - Epoch  39 | train_loss=0.366425 | val_loss=0.053784
+2025-11-01 14:54:04,220 - models.nhits - INFO - Epoch  40 | train_loss=0.033706 | val_loss=0.037549
+2025-11-01 14:54:12,454 - models.nhits - INFO - Epoch  41 | train_loss=0.063200 | val_loss=0.050369
+2025-11-01 14:54:20,617 - models.nhits - INFO - Epoch  42 | train_loss=0.025664 | val_loss=0.031341
+2025-11-01 14:54:28,810 - models.nhits - INFO - Epoch  43 | train_loss=0.035469 | val_loss=0.035296
+2025-11-01 14:54:37,117 - models.nhits - INFO - Epoch  44 | train_loss=0.035894 | val_loss=0.054420
+2025-11-01 14:54:45,151 - models.nhits - INFO - Epoch  45 | train_loss=0.064086 | val_loss=0.076388
+2025-11-01 14:54:53,134 - models.nhits - INFO - Epoch  46 | train_loss=0.026589 | val_loss=0.027151
+2025-11-01 14:55:01,117 - models.nhits - INFO - Epoch  47 | train_loss=0.257154 | val_loss=0.044666
+2025-11-01 14:55:09,095 - models.nhits - INFO - Epoch  48 | train_loss=0.029088 | val_loss=0.042424
+2025-11-01 14:55:17,098 - models.nhits - INFO - Epoch  49 | train_loss=0.024805 | val_loss=0.046327
+2025-11-01 14:55:25,137 - models.nhits - INFO - Epoch  50 | train_loss=0.038721 | val_loss=0.032447
+2025-11-01 14:55:33,214 - models.nhits - INFO - Epoch  51 | train_loss=3.003416 | val_loss=0.893546
+2025-11-01 14:55:41,285 - models.nhits - INFO - Epoch  52 | train_loss=0.031183 | val_loss=0.032023
+2025-11-01 14:55:49,364 - models.nhits - INFO - Epoch  53 | train_loss=0.210600 | val_loss=0.039270
+2025-11-01 14:55:57,492 - models.nhits - INFO - Epoch  54 | train_loss=0.027358 | val_loss=0.041240
+2025-11-01 14:56:05,639 - models.nhits - INFO - Epoch  55 | train_loss=0.026551 | val_loss=0.039490
+2025-11-01 14:56:13,726 - models.nhits - INFO - Epoch  56 | train_loss=0.030718 | val_loss=0.035079
+2025-11-01 14:56:21,801 - models.nhits - INFO - Epoch  57 | train_loss=0.053843 | val_loss=0.036446
+2025-11-01 14:56:29,888 - models.nhits - INFO - Epoch  58 | train_loss=0.018237 | val_loss=0.027629
+2025-11-01 14:56:37,973 - models.nhits - INFO - Epoch  59 | train_loss=0.017427 | val_loss=0.023872
+2025-11-01 14:56:46,045 - models.nhits - INFO - Epoch  60 | train_loss=0.016367 | val_loss=0.029873
+2025-11-01 14:56:54,118 - models.nhits - INFO - Epoch  61 | train_loss=0.017415 | val_loss=0.027775
+2025-11-01 14:57:02,239 - models.nhits - INFO - Epoch  62 | train_loss=0.017204 | val_loss=0.024409
+2025-11-01 14:57:10,340 - models.nhits - INFO - Epoch  63 | train_loss=0.016777 | val_loss=0.026920
+2025-11-01 14:57:18,438 - models.nhits - INFO - Epoch  64 | train_loss=0.015690 | val_loss=0.031505
+2025-11-01 14:57:26,542 - models.nhits - INFO - Epoch  65 | train_loss=0.016505 | val_loss=0.022421
+2025-11-01 14:57:34,612 - models.nhits - INFO - Epoch  66 | train_loss=0.016246 | val_loss=0.024995
+2025-11-01 14:57:42,694 - models.nhits - INFO - Epoch  67 | train_loss=0.022034 | val_loss=0.026398
+2025-11-01 14:57:50,747 - models.nhits - INFO - Epoch  68 | train_loss=0.016211 | val_loss=0.027371
+2025-11-01 14:57:58,830 - models.nhits - INFO - Epoch  69 | train_loss=0.015384 | val_loss=0.022598
+2025-11-01 14:58:06,846 - models.nhits - INFO - Epoch  70 | train_loss=0.015519 | val_loss=0.027075
+2025-11-01 14:58:14,830 - models.nhits - INFO - Epoch  71 | train_loss=0.015233 | val_loss=0.026069
+2025-11-01 14:58:22,790 - models.nhits - INFO - Epoch  72 | train_loss=0.017521 | val_loss=0.025618
+2025-11-01 14:58:30,766 - models.nhits - INFO - Epoch  73 | train_loss=0.015405 | val_loss=0.022893
+2025-11-01 14:58:38,750 - models.nhits - INFO - Epoch  74 | train_loss=0.015738 | val_loss=0.026172
+2025-11-01 14:58:46,720 - models.nhits - INFO - Epoch  75 | train_loss=0.017040 | val_loss=0.021732
+2025-11-01 14:58:54,768 - models.nhits - INFO - Epoch  76 | train_loss=0.015505 | val_loss=0.023846
+2025-11-01 14:59:02,825 - models.nhits - INFO - Epoch  77 | train_loss=0.015891 | val_loss=0.026522
+2025-11-01 14:59:10,918 - models.nhits - INFO - Epoch  78 | train_loss=0.014863 | val_loss=0.024958
+2025-11-01 14:59:19,010 - models.nhits - INFO - Epoch  79 | train_loss=0.018179 | val_loss=0.025947
+2025-11-01 14:59:27,124 - models.nhits - INFO - Epoch  80 | train_loss=0.014414 | val_loss=0.022582
+2025-11-01 14:59:35,256 - models.nhits - INFO - Epoch  81 | train_loss=0.014329 | val_loss=0.024784
+2025-11-01 14:59:43,350 - models.nhits - INFO - Epoch  82 | train_loss=0.017985 | val_loss=0.021967
+2025-11-01 14:59:51,429 - models.nhits - INFO - Epoch  83 | train_loss=0.017152 | val_loss=0.023511
+2025-11-01 14:59:59,518 - models.nhits - INFO - Epoch  84 | train_loss=0.013976 | val_loss=0.021838
+2025-11-01 15:00:07,608 - models.nhits - INFO - Epoch  85 | train_loss=0.014315 | val_loss=0.023733
+2025-11-01 15:00:15,692 - models.nhits - INFO - Epoch  86 | train_loss=0.014134 | val_loss=0.021690
+2025-11-01 15:00:23,797 - models.nhits - INFO - Epoch  87 | train_loss=0.015048 | val_loss=0.025471
+2025-11-01 15:00:31,791 - models.nhits - INFO - Epoch  88 | train_loss=0.015553 | val_loss=0.024243
+2025-11-01 15:00:39,757 - models.nhits - INFO - Epoch  89 | train_loss=0.015416 | val_loss=0.024261
+2025-11-01 15:00:47,719 - models.nhits - INFO - Epoch  90 | train_loss=0.016716 | val_loss=0.022475
+2025-11-01 15:00:55,688 - models.nhits - INFO - Epoch  91 | train_loss=0.017070 | val_loss=0.022072
+2025-11-01 15:01:03,718 - models.nhits - INFO - Epoch  92 | train_loss=0.016582 | val_loss=0.024254
+2025-11-01 15:01:11,694 - models.nhits - INFO - Epoch  93 | train_loss=0.014739 | val_loss=0.022297
+2025-11-01 15:01:19,677 - models.nhits - INFO - Epoch  94 | train_loss=0.013848 | val_loss=0.022699
+2025-11-01 15:01:27,661 - models.nhits - INFO - Epoch  95 | train_loss=0.020973 | val_loss=0.025761
+2025-11-01 15:01:35,612 - models.nhits - INFO - Epoch  96 | train_loss=0.014598 | val_loss=0.021352
+2025-11-01 15:01:43,612 - models.nhits - INFO - Epoch  97 | train_loss=0.013100 | val_loss=0.024572
+2025-11-01 15:01:51,578 - models.nhits - INFO - Epoch  98 | train_loss=0.013232 | val_loss=0.029121
+2025-11-01 15:01:59,528 - models.nhits - INFO - Epoch  99 | train_loss=0.018226 | val_loss=0.053930
+2025-11-01 15:02:07,538 - models.nhits - INFO - Epoch 100 | train_loss=0.014918 | val_loss=0.022398
+2025-11-01 15:02:07,557 - models.patchtst - INFO - 模型已保存到: results\experiment_20251101_144637/patchtst_model.pth
+2025-11-01 15:02:07,584 - models.nhits - INFO - 模型已保存到: results\experiment_20251101_144637/nhits_model.pth
+2025-11-01 15:02:07,585 - main - INFO - 专家模型训练完成
+2025-11-01 15:02:07,588 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-11-01 15:02:07,588 - main - INFO - 获取专家模型预测...
+2025-11-01 15:02:20,120 - main - INFO - 专家预测获取完成
+2025-11-01 15:02:20,121 - main - INFO - 实现策略A快速模式：静态优化权重（max_iterations=20）...
+2025-11-01 15:02:20,770 - __main__ - ERROR - 实验失败: 'StaticWeightOptimizer' object has no attribute 'optimize_weights'
+2025-11-01 17:27:46,667 - __main__ - INFO - 初始化实验...
+2025-11-01 17:27:46,677 - main - INFO - 使用设备: cuda
+2025-11-01 17:27:46,679 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-11-01 17:27:46,679 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-11-01 17:27:46,679 - main - INFO - 开始数据加载和预处理...
+2025-11-01 17:27:46,687 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-11-01 17:27:48,879 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-11-01 17:27:48,883 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 17:27:48,885 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-11-01 17:27:48,888 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 17:27:48,896 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-11-01 17:27:48,896 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-11-01 17:27:48,975 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-11-01 17:27:48,975 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-11-01 17:27:48,975 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-11-01 17:27:48,975 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-11-01 17:27:48,976 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-11-01 17:27:49,043 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-11-01 17:27:49,043 - main - INFO - 数据预处理完成:
+2025-11-01 17:27:49,043 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-11-01 17:27:49,043 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-11-01 17:27:49,044 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-11-01 17:27:49,044 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-11-01 17:27:49,044 - main - INFO - 开始训练专家模型...
+2025-11-01 17:27:49,044 - main - INFO - 创建PatchTST模型...
+2025-11-01 17:27:49,093 - main - INFO - 创建NHITS模型...
+2025-11-01 17:27:49,158 - main - INFO - 训练PatchTST...
+2025-11-01 17:27:59,953 - models.patchtst - INFO - Epoch   1 | train_loss=0.927991 | val_loss=1.327851
+2025-11-01 17:28:07,027 - models.patchtst - INFO - Epoch   2 | train_loss=0.924145 | val_loss=1.327801
+2025-11-01 17:28:14,137 - models.patchtst - INFO - Epoch   3 | train_loss=0.924014 | val_loss=1.327835
+2025-11-01 17:28:21,194 - models.patchtst - INFO - Epoch   4 | train_loss=0.923973 | val_loss=1.327958
+2025-11-01 17:28:28,322 - models.patchtst - INFO - Epoch   5 | train_loss=0.923969 | val_loss=1.327751
+2025-11-01 17:28:35,549 - models.patchtst - INFO - Epoch   6 | train_loss=0.923997 | val_loss=1.327883
+2025-11-01 17:28:42,927 - models.patchtst - INFO - Epoch   7 | train_loss=0.924078 | val_loss=1.327748
+2025-11-01 17:28:50,244 - models.patchtst - INFO - Epoch   8 | train_loss=0.923985 | val_loss=1.327974
+2025-11-01 17:28:57,482 - models.patchtst - INFO - Epoch   9 | train_loss=0.924022 | val_loss=1.327784
+2025-11-01 17:29:04,819 - models.patchtst - INFO - Epoch  10 | train_loss=0.923972 | val_loss=1.327938
+2025-11-01 17:29:12,168 - models.patchtst - INFO - Epoch  11 | train_loss=0.923993 | val_loss=1.327935
+2025-11-01 17:29:19,530 - models.patchtst - INFO - Epoch  12 | train_loss=0.924047 | val_loss=1.327818
+2025-11-01 17:29:27,078 - models.patchtst - INFO - Epoch  13 | train_loss=0.923908 | val_loss=1.327786
+2025-11-01 17:29:34,522 - models.patchtst - INFO - Epoch  14 | train_loss=0.923994 | val_loss=1.327731
+2025-11-01 17:29:41,945 - models.patchtst - INFO - Epoch  15 | train_loss=0.923891 | val_loss=1.327840
+2025-11-01 17:29:49,360 - models.patchtst - INFO - Epoch  16 | train_loss=0.923882 | val_loss=1.327883
+2025-11-01 17:29:56,940 - models.patchtst - INFO - Epoch  17 | train_loss=0.923957 | val_loss=1.327817
+2025-11-01 17:30:04,323 - models.patchtst - INFO - Epoch  18 | train_loss=0.923963 | val_loss=1.327750
+2025-11-01 17:30:11,631 - models.patchtst - INFO - Epoch  19 | train_loss=0.923931 | val_loss=1.327832
+2025-11-01 17:30:18,954 - models.patchtst - INFO - Epoch  20 | train_loss=0.923973 | val_loss=1.327789
+2025-11-01 17:30:26,144 - models.patchtst - INFO - Epoch  21 | train_loss=0.923945 | val_loss=1.327777
+2025-11-01 17:30:33,328 - models.patchtst - INFO - Epoch  22 | train_loss=0.923967 | val_loss=1.327705
+2025-11-01 17:30:40,500 - models.patchtst - INFO - Epoch  23 | train_loss=0.923897 | val_loss=1.327781
+2025-11-01 17:30:47,727 - models.patchtst - INFO - Epoch  24 | train_loss=0.924020 | val_loss=1.327839
+2025-11-01 17:30:54,980 - models.patchtst - INFO - Epoch  25 | train_loss=0.923879 | val_loss=1.327893
+2025-11-01 17:31:02,238 - models.patchtst - INFO - Epoch  26 | train_loss=0.923881 | val_loss=1.327769
+2025-11-01 17:31:09,494 - models.patchtst - INFO - Epoch  27 | train_loss=0.923871 | val_loss=1.327688
+2025-11-01 17:31:16,749 - models.patchtst - INFO - Epoch  28 | train_loss=0.923948 | val_loss=1.327750
+2025-11-01 17:31:23,889 - models.patchtst - INFO - Epoch  29 | train_loss=0.923950 | val_loss=1.327771
+2025-11-01 17:31:31,160 - models.patchtst - INFO - Epoch  30 | train_loss=0.923956 | val_loss=1.327797
+2025-11-01 17:31:38,347 - models.patchtst - INFO - Epoch  31 | train_loss=0.923923 | val_loss=1.327787
+2025-11-01 17:31:45,490 - models.patchtst - INFO - Epoch  32 | train_loss=0.923949 | val_loss=1.327737
+2025-11-01 17:31:52,653 - models.patchtst - INFO - Epoch  33 | train_loss=0.923921 | val_loss=1.327778
+2025-11-01 17:31:59,777 - models.patchtst - INFO - Epoch  34 | train_loss=0.923827 | val_loss=1.327788
+2025-11-01 17:32:06,928 - models.patchtst - INFO - Epoch  35 | train_loss=0.923917 | val_loss=1.327777
+2025-11-01 17:32:14,134 - models.patchtst - INFO - Epoch  36 | train_loss=0.923874 | val_loss=1.327779
+2025-11-01 17:32:21,269 - models.patchtst - INFO - Epoch  37 | train_loss=0.923840 | val_loss=1.327801
+2025-11-01 17:32:28,392 - models.patchtst - INFO - Epoch  38 | train_loss=0.923879 | val_loss=1.327801
+2025-11-01 17:32:35,570 - models.patchtst - INFO - Epoch  39 | train_loss=0.923952 | val_loss=1.327782
+2025-11-01 17:32:42,739 - models.patchtst - INFO - Epoch  40 | train_loss=0.923867 | val_loss=1.327801
+2025-11-01 17:32:49,928 - models.patchtst - INFO - Epoch  41 | train_loss=0.923929 | val_loss=1.327754
+2025-11-01 17:32:57,083 - models.patchtst - INFO - Epoch  42 | train_loss=0.923851 | val_loss=1.327772
+2025-11-01 17:32:57,083 - models.patchtst - INFO - Early stopping at epoch 42早停触发（连续15轮验证损失未下降），最佳验证损失：1.327688
+2025-11-01 17:32:57,083 - main - INFO - 训练NHITS...
+2025-11-01 17:33:05,081 - models.nhits - INFO - Epoch   1 | train_loss=62350871.134563 | val_loss=265.913677
+2025-11-01 17:33:13,121 - models.nhits - INFO - Epoch   2 | train_loss=236.390530 | val_loss=12.602405
+2025-11-01 17:33:21,157 - models.nhits - INFO - Epoch   3 | train_loss=9.552664 | val_loss=1.335739
+2025-11-01 17:33:29,192 - models.nhits - INFO - Epoch   4 | train_loss=1.702238 | val_loss=0.735546
+2025-11-01 17:33:37,723 - models.nhits - INFO - Epoch   5 | train_loss=0.405423 | val_loss=0.446550
+2025-11-01 17:33:45,927 - models.nhits - INFO - Epoch   6 | train_loss=1.204111 | val_loss=0.111881
+2025-11-01 17:33:54,291 - models.nhits - INFO - Epoch   7 | train_loss=0.121262 | val_loss=0.073189
+2025-11-01 17:34:02,521 - models.nhits - INFO - Epoch   8 | train_loss=0.086746 | val_loss=0.080501
+2025-11-01 17:34:10,795 - models.nhits - INFO - Epoch   9 | train_loss=0.064276 | val_loss=0.064505
+2025-11-01 17:34:19,051 - models.nhits - INFO - Epoch  10 | train_loss=0.064436 | val_loss=0.114140
+2025-11-01 17:34:27,562 - models.nhits - INFO - Epoch  11 | train_loss=0.120896 | val_loss=0.103073
+2025-11-01 17:34:35,914 - models.nhits - INFO - Epoch  12 | train_loss=0.052311 | val_loss=0.063635
+2025-11-01 17:34:44,107 - models.nhits - INFO - Epoch  13 | train_loss=0.048439 | val_loss=0.088078
+2025-11-01 17:34:52,112 - models.nhits - INFO - Epoch  14 | train_loss=0.045039 | val_loss=0.062346
+2025-11-01 17:35:00,169 - models.nhits - INFO - Epoch  15 | train_loss=0.319428 | val_loss=0.048450
+2025-11-01 17:35:08,160 - models.nhits - INFO - Epoch  16 | train_loss=0.184726 | val_loss=0.066632
+2025-11-01 17:35:16,161 - models.nhits - INFO - Epoch  17 | train_loss=0.042513 | val_loss=0.062101
+2025-11-01 17:35:24,151 - models.nhits - INFO - Epoch  18 | train_loss=0.041198 | val_loss=0.052071
+2025-11-01 17:35:32,128 - models.nhits - INFO - Epoch  19 | train_loss=0.039697 | val_loss=0.046308
+2025-11-01 17:35:40,124 - models.nhits - INFO - Epoch  20 | train_loss=0.039638 | val_loss=0.047277
+2025-11-01 17:35:48,101 - models.nhits - INFO - Epoch  21 | train_loss=0.966358 | val_loss=0.046030
+2025-11-01 17:35:56,079 - models.nhits - INFO - Epoch  22 | train_loss=0.038559 | val_loss=0.066693
+2025-11-01 17:36:04,044 - models.nhits - INFO - Epoch  23 | train_loss=0.037233 | val_loss=0.057726
+2025-11-01 17:36:12,025 - models.nhits - INFO - Epoch  24 | train_loss=0.057562 | val_loss=0.040491
+2025-11-01 17:36:19,984 - models.nhits - INFO - Epoch  25 | train_loss=39.120182 | val_loss=0.052015
+2025-11-01 17:36:28,005 - models.nhits - INFO - Epoch  26 | train_loss=0.327999 | val_loss=0.055557
+2025-11-01 17:36:35,976 - models.nhits - INFO - Epoch  27 | train_loss=0.036211 | val_loss=0.037638
+2025-11-01 17:36:43,988 - models.nhits - INFO - Epoch  28 | train_loss=0.034722 | val_loss=0.047283
+2025-11-01 17:36:51,964 - models.nhits - INFO - Epoch  29 | train_loss=0.035780 | val_loss=0.053603
+2025-11-01 17:36:59,969 - models.nhits - INFO - Epoch  30 | train_loss=0.184102 | val_loss=0.059676
+2025-11-01 17:37:07,935 - models.nhits - INFO - Epoch  31 | train_loss=0.035192 | val_loss=0.041407
+2025-11-01 17:37:15,905 - models.nhits - INFO - Epoch  32 | train_loss=0.030695 | val_loss=0.043028
+2025-11-01 17:37:23,884 - models.nhits - INFO - Epoch  33 | train_loss=0.047899 | val_loss=0.039105
+2025-11-01 17:37:31,896 - models.nhits - INFO - Epoch  34 | train_loss=0.035269 | val_loss=0.042592
+2025-11-01 17:37:39,875 - models.nhits - INFO - Epoch  35 | train_loss=0.032040 | val_loss=0.047198
+2025-11-01 17:37:47,838 - models.nhits - INFO - Epoch  36 | train_loss=0.255267 | val_loss=0.042095
+2025-11-01 17:37:55,811 - models.nhits - INFO - Epoch  37 | train_loss=0.213101 | val_loss=0.052730
+2025-11-01 17:38:03,797 - models.nhits - INFO - Epoch  38 | train_loss=0.033974 | val_loss=0.045167
+2025-11-01 17:38:11,867 - models.nhits - INFO - Epoch  39 | train_loss=0.026897 | val_loss=0.037993
+2025-11-01 17:38:19,931 - models.nhits - INFO - Epoch  40 | train_loss=0.025634 | val_loss=0.036179
+2025-11-01 17:38:27,921 - models.nhits - INFO - Epoch  41 | train_loss=0.026468 | val_loss=0.037404
+2025-11-01 17:38:36,030 - models.nhits - INFO - Epoch  42 | train_loss=0.024907 | val_loss=0.039887
+2025-11-01 17:38:44,308 - models.nhits - INFO - Epoch  43 | train_loss=0.025646 | val_loss=0.036997
+2025-11-01 17:38:52,544 - models.nhits - INFO - Epoch  44 | train_loss=0.026531 | val_loss=0.041867
+2025-11-01 17:39:00,701 - models.nhits - INFO - Epoch  45 | train_loss=0.025090 | val_loss=0.035433
+2025-11-01 17:39:08,876 - models.nhits - INFO - Epoch  46 | train_loss=0.024909 | val_loss=0.037283
+2025-11-01 17:39:16,973 - models.nhits - INFO - Epoch  47 | train_loss=0.025071 | val_loss=0.038170
+2025-11-01 17:39:25,117 - models.nhits - INFO - Epoch  48 | train_loss=0.025671 | val_loss=0.036936
+2025-11-01 17:39:33,309 - models.nhits - INFO - Epoch  49 | train_loss=0.026622 | val_loss=0.045715
+2025-11-01 17:39:41,443 - models.nhits - INFO - Epoch  50 | train_loss=0.024200 | val_loss=0.035096
+2025-11-01 17:39:49,579 - models.nhits - INFO - Epoch  51 | train_loss=0.024267 | val_loss=0.034009
+2025-11-01 17:39:57,931 - models.nhits - INFO - Epoch  52 | train_loss=0.024007 | val_loss=0.036837
+2025-11-01 17:40:06,053 - models.nhits - INFO - Epoch  53 | train_loss=0.023737 | val_loss=0.035127
+2025-11-01 17:40:14,318 - models.nhits - INFO - Epoch  54 | train_loss=0.023340 | val_loss=0.034765
+2025-11-01 17:40:22,474 - models.nhits - INFO - Epoch  55 | train_loss=0.022701 | val_loss=0.032713
+2025-11-01 17:40:30,599 - models.nhits - INFO - Epoch  56 | train_loss=0.023456 | val_loss=0.035845
+2025-11-01 17:40:38,813 - models.nhits - INFO - Epoch  57 | train_loss=0.024267 | val_loss=0.032281
+2025-11-01 17:40:47,052 - models.nhits - INFO - Epoch  58 | train_loss=0.022109 | val_loss=0.034132
+2025-11-01 17:40:55,246 - models.nhits - INFO - Epoch  59 | train_loss=0.023779 | val_loss=0.038886
+2025-11-01 17:41:03,468 - models.nhits - INFO - Epoch  60 | train_loss=0.022323 | val_loss=0.031660
+2025-11-01 17:41:11,731 - models.nhits - INFO - Epoch  61 | train_loss=0.022082 | val_loss=0.033497
+2025-11-01 17:41:19,980 - models.nhits - INFO - Epoch  62 | train_loss=0.022034 | val_loss=0.039062
+2025-11-01 17:41:28,198 - models.nhits - INFO - Epoch  63 | train_loss=0.022134 | val_loss=0.031074
+2025-11-01 17:41:36,473 - models.nhits - INFO - Epoch  64 | train_loss=0.021499 | val_loss=0.033032
+2025-11-01 17:41:44,720 - models.nhits - INFO - Epoch  65 | train_loss=0.023328 | val_loss=0.035781
+2025-11-01 17:41:53,005 - models.nhits - INFO - Epoch  66 | train_loss=0.021833 | val_loss=0.038565
+2025-11-01 17:42:01,260 - models.nhits - INFO - Epoch  67 | train_loss=0.021862 | val_loss=0.030496
+2025-11-01 17:42:09,578 - models.nhits - INFO - Epoch  68 | train_loss=0.021732 | val_loss=0.030645
+2025-11-01 17:42:17,870 - models.nhits - INFO - Epoch  69 | train_loss=0.020693 | val_loss=0.038408
+2025-11-01 17:42:26,204 - models.nhits - INFO - Epoch  70 | train_loss=0.021236 | val_loss=0.031961
+2025-11-01 17:42:34,485 - models.nhits - INFO - Epoch  71 | train_loss=0.021044 | val_loss=0.030631
+2025-11-01 17:42:42,814 - models.nhits - INFO - Epoch  72 | train_loss=0.020109 | val_loss=0.029156
+2025-11-01 17:42:51,142 - models.nhits - INFO - Epoch  73 | train_loss=0.023545 | val_loss=0.031084
+2025-11-01 17:42:59,499 - models.nhits - INFO - Epoch  74 | train_loss=0.019971 | val_loss=0.035032
+2025-11-01 17:43:07,773 - models.nhits - INFO - Epoch  75 | train_loss=0.020784 | val_loss=0.031214
+2025-11-01 17:43:16,049 - models.nhits - INFO - Epoch  76 | train_loss=0.019743 | val_loss=0.030368
+2025-11-01 17:43:24,348 - models.nhits - INFO - Epoch  77 | train_loss=0.020528 | val_loss=0.031723
+2025-11-01 17:43:32,622 - models.nhits - INFO - Epoch  78 | train_loss=0.018840 | val_loss=0.029822
+2025-11-01 17:43:40,871 - models.nhits - INFO - Epoch  79 | train_loss=0.019952 | val_loss=0.032279
+2025-11-01 17:43:49,084 - models.nhits - INFO - Epoch  80 | train_loss=0.018721 | val_loss=0.031119
+2025-11-01 17:43:57,352 - models.nhits - INFO - Epoch  81 | train_loss=0.019726 | val_loss=0.029933
+2025-11-01 17:44:05,661 - models.nhits - INFO - Epoch  82 | train_loss=0.018726 | val_loss=0.031864
+2025-11-01 17:44:13,889 - models.nhits - INFO - Epoch  83 | train_loss=0.018799 | val_loss=0.029681
+2025-11-01 17:44:22,137 - models.nhits - INFO - Epoch  84 | train_loss=0.015368 | val_loss=0.026052
+2025-11-01 17:44:30,445 - models.nhits - INFO - Epoch  85 | train_loss=0.014716 | val_loss=0.028429
+2025-11-01 17:44:38,687 - models.nhits - INFO - Epoch  86 | train_loss=0.014475 | val_loss=0.028644
+2025-11-01 17:44:46,932 - models.nhits - INFO - Epoch  87 | train_loss=0.014399 | val_loss=0.029744
+2025-11-01 17:44:55,211 - models.nhits - INFO - Epoch  88 | train_loss=0.014383 | val_loss=0.025228
+2025-11-01 17:45:03,478 - models.nhits - INFO - Epoch  89 | train_loss=0.013750 | val_loss=0.026485
+2025-11-01 17:45:11,802 - models.nhits - INFO - Epoch  90 | train_loss=0.013708 | val_loss=0.026678
+2025-11-01 17:45:19,991 - models.nhits - INFO - Epoch  91 | train_loss=0.014270 | val_loss=0.024391
+2025-11-01 17:45:28,283 - models.nhits - INFO - Epoch  92 | train_loss=0.013853 | val_loss=0.023957
+2025-11-01 17:45:36,527 - models.nhits - INFO - Epoch  93 | train_loss=0.013287 | val_loss=0.025398
+2025-11-01 17:45:45,014 - models.nhits - INFO - Epoch  94 | train_loss=0.013571 | val_loss=0.025138
+2025-11-01 17:45:53,300 - models.nhits - INFO - Epoch  95 | train_loss=0.013307 | val_loss=0.026111
+2025-11-01 17:46:01,558 - models.nhits - INFO - Epoch  96 | train_loss=0.013494 | val_loss=0.024132
+2025-11-01 17:46:09,775 - models.nhits - INFO - Epoch  97 | train_loss=0.013197 | val_loss=0.025109
+2025-11-01 17:46:18,032 - models.nhits - INFO - Epoch  98 | train_loss=0.013350 | val_loss=0.025513
+2025-11-01 17:46:26,255 - models.nhits - INFO - Epoch  99 | train_loss=0.012893 | val_loss=0.027181
+2025-11-01 17:46:34,591 - models.nhits - INFO - Epoch 100 | train_loss=0.013160 | val_loss=0.026123
+2025-11-01 17:46:34,618 - models.patchtst - INFO - 模型已保存到: results\experiment_20251101_172746/patchtst_model.pth
+2025-11-01 17:46:34,647 - models.nhits - INFO - 模型已保存到: results\experiment_20251101_172746/nhits_model.pth
+2025-11-01 17:46:34,647 - main - INFO - 专家模型训练完成
+2025-11-01 17:46:34,651 - __main__ - INFO - 步骤3: 快速运行融合策略...
+2025-11-01 17:46:34,651 - main - INFO - 获取专家模型预测...
+2025-11-01 17:46:47,745 - main - INFO - 专家预测获取完成
+2025-11-01 17:46:47,746 - main - INFO - 实现策略A快速模式：静态优化权重（max_iterations=20）...
+2025-11-01 17:46:48,419 - __main__ - ERROR - 实验失败: 'MPAOptimizer' object has no attribute 'mpa'
+2025-11-01 19:31:28,707 - __main__ - INFO - 初始化实验...
+2025-11-01 19:31:28,716 - main - INFO - 使用设备: cuda
+2025-11-01 19:31:28,717 - __main__ - INFO - 运行快速验证模式 - 使用真实数据...
+2025-11-01 19:31:28,717 - __main__ - INFO - 步骤1: 加载真实数据...
+2025-11-01 19:31:28,717 - main - INFO - 开始数据加载和预处理...
+2025-11-01 19:31:28,725 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-11-01 19:31:30,857 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-11-01 19:31:30,859 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 19:31:30,862 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-11-01 19:31:30,864 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-01 19:31:30,871 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-11-01 19:31:30,872 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-11-01 19:31:30,953 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-11-01 19:31:30,953 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-11-01 19:31:30,954 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-11-01 19:31:30,954 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-11-01 19:31:30,954 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-11-01 19:31:31,033 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-11-01 19:31:31,033 - main - INFO - 数据预处理完成:
+2025-11-01 19:31:31,033 - main - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-11-01 19:31:31,033 - main - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-11-01 19:31:31,033 - main - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-11-01 19:31:31,033 - __main__ - INFO - 步骤2: 快速训练模型...
+2025-11-01 19:31:31,033 - main - INFO - 开始训练专家模型...
+2025-11-01 19:31:31,033 - main - INFO - 创建PatchTST模型...
+2025-11-01 19:31:31,047 - main - INFO - 创建NHITS模型...
+2025-11-01 19:31:31,111 - main - INFO - 训练PatchTST...
+2025-11-01 19:31:40,899 - models.patchtst - INFO - Epoch   1 | train_loss=0.928468 | val_loss=1.327757
+2025-11-01 19:31:47,925 - models.patchtst - INFO - Epoch   2 | train_loss=0.923990 | val_loss=1.327662
+2025-11-01 19:31:54,897 - models.patchtst - INFO - Epoch   3 | train_loss=0.923920 | val_loss=1.327618
+2025-11-01 19:32:02,068 - models.patchtst - INFO - Epoch   4 | train_loss=0.923925 | val_loss=1.327668
+2025-11-01 19:32:09,150 - models.patchtst - INFO - Epoch   5 | train_loss=0.923976 | val_loss=1.327669
+2025-11-01 19:32:16,137 - models.patchtst - INFO - Epoch   6 | train_loss=0.923987 | val_loss=1.327712
+2025-11-01 19:32:23,173 - models.patchtst - INFO - Epoch   7 | train_loss=0.923939 | val_loss=1.328249
+2025-11-01 19:32:30,172 - models.patchtst - INFO - Epoch   8 | train_loss=0.923988 | val_loss=1.327798
+2025-11-01 19:32:37,223 - models.patchtst - INFO - Epoch   9 | train_loss=0.923989 | val_loss=1.327754
+2025-11-01 19:32:44,345 - models.patchtst - INFO - Epoch  10 | train_loss=0.924006 | val_loss=1.327716
+2025-11-01 19:32:51,383 - models.patchtst - INFO - Epoch  11 | train_loss=0.923952 | val_loss=1.327743
+2025-11-01 19:32:58,513 - models.patchtst - INFO - Epoch  12 | train_loss=0.924117 | val_loss=1.327651
+2025-11-01 19:33:05,770 - models.patchtst - INFO - Epoch  13 | train_loss=0.923905 | val_loss=1.327901
+2025-11-01 19:33:12,879 - models.patchtst - INFO - Epoch  14 | train_loss=0.923921 | val_loss=1.328073
+2025-11-01 19:33:19,971 - models.patchtst - INFO - Epoch  15 | train_loss=0.923910 | val_loss=1.327878
+2025-11-01 19:33:27,021 - models.patchtst - INFO - Epoch  16 | train_loss=0.924001 | val_loss=1.327864
+2025-11-01 19:33:34,127 - models.patchtst - INFO - Epoch  17 | train_loss=0.923910 | val_loss=1.327817
+2025-11-01 19:33:41,166 - models.patchtst - INFO - Epoch  18 | train_loss=0.923894 | val_loss=1.327791
+2025-11-01 19:33:41,167 - models.patchtst - INFO - Early stopping at epoch 18早停触发（连续15轮验证损失未下降），最佳验证损失：1.327618
+2025-11-01 19:33:41,167 - main - INFO - 训练NHITS...
+2025-11-01 19:33:49,063 - models.nhits - INFO - Epoch   1 | train_loss=615717804.075352 | val_loss=416.028802
+2025-11-01 19:33:56,912 - models.nhits - INFO - Epoch   2 | train_loss=227.067418 | val_loss=10.051271
+2025-11-01 19:34:04,777 - models.nhits - INFO - Epoch   3 | train_loss=4.250484 | val_loss=0.797358
+2025-11-01 19:34:12,632 - models.nhits - INFO - Epoch   4 | train_loss=0.441132 | val_loss=0.187039
+2025-11-01 19:34:20,503 - models.nhits - INFO - Epoch   5 | train_loss=0.176381 | val_loss=0.129356
+2025-11-01 19:34:28,441 - models.nhits - INFO - Epoch   6 | train_loss=0.116229 | val_loss=0.117710
+2025-11-01 19:34:36,327 - models.nhits - INFO - Epoch   7 | train_loss=0.117696 | val_loss=0.146535
+2025-11-01 19:34:44,174 - models.nhits - INFO - Epoch   8 | train_loss=0.407756 | val_loss=0.134929
+2025-11-01 19:34:52,139 - models.nhits - INFO - Epoch   9 | train_loss=0.099532 | val_loss=0.094489
+2025-11-01 19:35:00,144 - models.nhits - INFO - Epoch  10 | train_loss=0.080137 | val_loss=0.109530
+2025-11-01 19:35:08,062 - models.nhits - INFO - Epoch  11 | train_loss=0.076511 | val_loss=0.080222
+2025-11-01 19:35:15,889 - models.nhits - INFO - Epoch  12 | train_loss=0.073584 | val_loss=0.077721
+2025-11-01 19:35:23,694 - models.nhits - INFO - Epoch  13 | train_loss=0.084840 | val_loss=0.125241
+2025-11-01 19:35:31,527 - models.nhits - INFO - Epoch  14 | train_loss=0.096703 | val_loss=0.082649
+2025-11-01 19:35:39,384 - models.nhits - INFO - Epoch  15 | train_loss=0.067126 | val_loss=0.104015
+2025-11-01 19:35:47,209 - models.nhits - INFO - Epoch  16 | train_loss=0.068910 | val_loss=0.091106
+2025-11-01 19:35:55,035 - models.nhits - INFO - Epoch  17 | train_loss=0.067786 | val_loss=0.080930
+2025-11-01 19:36:03,281 - models.nhits - INFO - Epoch  18 | train_loss=0.157604 | val_loss=0.079321
+2025-11-01 19:36:11,409 - models.nhits - INFO - Epoch  19 | train_loss=0.067736 | val_loss=0.096928
+2025-11-01 19:36:19,513 - models.nhits - INFO - Epoch  20 | train_loss=0.063264 | val_loss=0.107417
