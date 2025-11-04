@@ -19,9 +19,7 @@ sys.path.append(str(project_root))
 from src.data_preprocessing.data_loader import DataLoader
 from models.patchtst import PatchTST
 from models.nhits import NHITS
-#from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer
-from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer, StaticWeightOptimizer
-
+from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer
 from src.strategies.gating_network import GatingNetwork
 from src.evaluation.metrics import EvaluationMetrics
 from src.visualization.plots import VisualizationEngine
@@ -90,7 +88,7 @@ def validate_models_quick(X_train, y_train, X_val, y_val):
     print(f"使用设备: {device}")
     
     # 模型参数
-    batch_size = int(self.config['training']['batch_size'])
+    batch_size = 32
     input_size = X_train.shape[1]
     horizon = y_train.shape[1]
     num_features = X_train.shape[2]
@@ -102,14 +100,12 @@ def validate_models_quick(X_train, y_train, X_val, y_val):
     # 模式）
     print("\n训练PatchTST模型...")
     patchtst = PatchTST(input_size=input_size, horizon=horizon, num_features=num_features)
-    patchtst_train_loss = self.train_model_quick(patchtst_model, X_train, y_train,
-                                                 epochs=self.config['optimization']['tuning_epochs']),
+    patchtst_train_loss = train_model_quick(patchtst, X_train, y_train, device, epochs=5)
     
     # 训练NHITS（快速模式）
     print("\n训练NHITS模型...")
     nhits = NHITS(input_size=input_size, horizon=horizon, num_features=num_features)
-    nhits_train_loss = self.train_model_quick(nhits_model, X_train, y_train,
-                                              epochs=self.config['optimization']['tuning_epochs']),
+    nhits_train_loss = train_model_quick(nhits, X_train, y_train, device, epochs=5)
     
     # 验证集预测
     print("\n验证集预测...")
@@ -135,9 +131,7 @@ def validate_models_quick(X_train, y_train, X_val, y_val):
     return patchtst, nhits, patchtst_pred, nhits_pred, patchtst_metrics, nhits_metrics
 
 
-def train_model_quick(self, model, X_train, y_train, epochs=None):
-    if epochs is None:
-        epochs = self.config['optimization']['tuning_epochs']
+def train_model_quick(model, X_train, y_train, device, epochs=5):
     """快速训练模型"""
     # 添加输入验证检查
     if model is None:
@@ -154,11 +148,11 @@ def train_model_quick(self, model, X_train, y_train, epochs=None):
 
     model = model.to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=self.config['training']['learning_rate']),
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     criterion = torch.nn.MSELoss()
     
     # 简单的数据加载器
-    batch_size = int(self.config['training']['batch_size'])
+    batch_size = 32
     n_batches = len(X_train) // batch_size
     
     train_losses = []
@@ -220,9 +214,7 @@ def validate_fusion_strategies(y_true, patchtst_pred, nhits_pred):
     
     # 策略A：静态权重优化
     print("\n策略A: 静态权重优化...")
-
-    static_optimizer = StaticWeightOptimizer(mpa_config)
-
+    static_optimizer = MPAOptimizer.StaticWeightOptimizer(mpa_config)
     weights_a, score_a = static_optimizer.optimize_weights(expert_predictions, y_true)
     
     # 计算策略A预测
@@ -282,8 +274,8 @@ def generate_validation_plots(y_true, results):
     # 性能对比图
     print("生成性能对比图...")
     metrics = {
-        'PatchTST': results['experts']['patchtst']['metrics'],
-        'NHITS': results['experts']['nhits']['metrics'],
+        'PatchTST': results['experts']['patchtst_metrics'],
+        'NHITS': results['experts']['nhits_metrics'],
         'Strategy_A_Static': results['strategy_a']['metrics'],
         'Strategy_B_Stacking': results['strategy_b']['metrics']
     }
