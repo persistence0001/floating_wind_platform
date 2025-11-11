@@ -3185,3 +3185,11 @@ dtype: int64
 2025-11-11 22:10:43,615 - models.patchtst - INFO - Epoch  11 | train_loss=0.923964 | val_loss=1.327613
 2025-11-11 22:10:53,072 - models.patchtst - INFO - Epoch  12 | train_loss=0.923932 | val_loss=1.327724
 2025-11-11 22:11:02,280 - models.patchtst - INFO - Epoch  13 | train_loss=0.923943 | val_loss=1.327743
+2025-11-11 22:11:11,680 - models.patchtst - INFO - Epoch  14 | train_loss=0.923897 | val_loss=1.327800
+2025-11-11 22:11:21,222 - models.patchtst - INFO - Epoch  15 | train_loss=0.924024 | val_loss=1.327625
+2025-11-11 22:11:30,480 - models.patchtst - INFO - Epoch  16 | train_loss=0.924032 | val_loss=1.327787
+2025-11-11 22:11:40,446 - models.patchtst - INFO - Epoch  17 | train_loss=0.924001 | val_loss=1.327700
+2025-11-11 22:11:51,913 - models.patchtst - INFO - Epoch  18 | train_loss=0.923915 | val_loss=1.327647
+2025-11-11 22:12:01,401 - models.patchtst - INFO - Epoch  19 | train_loss=0.923962 | val_loss=1.327717
+2025-11-11 22:12:10,665 - models.patchtst - INFO - Epoch  20 | train_loss=0.924000 | val_loss=1.327769
+2025-11-11 22:12:20,031 - models.patchtst - INFO - Epoch  21 | train_loss=0.923852 | val_loss=1.327811
