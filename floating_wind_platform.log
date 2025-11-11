@@ -3024,3 +3024,158 @@ dtype: int64
 2025-11-11 21:46:33,898 - models.nhits - INFO - Epoch   3 | train_loss=82666716722839664197632.000000 | val_loss=20317313023996912992256.000000
 2025-11-11 21:46:52,822 - models.nhits - INFO - Epoch   4 | train_loss=82405525063307322458112.000000 | val_loss=20317313023996912992256.000000
 2025-11-11 21:47:12,475 - models.nhits - INFO - Epoch   5 | train_loss=86454728325009225285632.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:47:33,326 - models.nhits - INFO - Epoch   6 | train_loss=83807553208676088020992.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:47:52,831 - models.nhits - INFO - Epoch   7 | train_loss=82367084706454445228032.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:48:11,854 - models.nhits - INFO - Epoch   8 | train_loss=86081671210794718593024.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:48:30,797 - models.nhits - INFO - Epoch   9 | train_loss=85921543997075434242048.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:48:49,817 - models.nhits - INFO - Epoch  10 | train_loss=82816216430159673163776.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:49:08,843 - models.nhits - INFO - Epoch  11 | train_loss=86154857476782718713856.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:49:27,769 - models.nhits - INFO - Epoch  12 | train_loss=78471371347813071847424.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:49:44,485 - models.nhits - INFO - Epoch  13 | train_loss=80594947450127599534080.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:49:52,853 - models.nhits - INFO - Epoch  14 | train_loss=81245931781269043019776.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:50:01,352 - models.nhits - INFO - Epoch  15 | train_loss=83261417954353877090304.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:50:10,058 - models.nhits - INFO - Epoch  16 | train_loss=88101970624099238543360.000000 | val_loss=20317313023996912992256.000000
+2025-11-11 21:50:10,058 - models.nhits - INFO - Early stopping at epoch 16早停触发（连续15轮验证损失未下降），最佳验证损失：20317313023996912992256.000000
+2025-11-11 21:50:10,085 - models.patchtst - INFO - 模型已保存到: results\experiment_20251111_213615/patchtst_model.pth
+2025-11-11 21:50:10,130 - models.nhits - INFO - 模型已保存到: results\experiment_20251111_213615/nhits_model.pth
+2025-11-11 21:50:10,130 - __main__ - INFO - 专家模型训练完成
+2025-11-11 21:50:10,135 - __main__ - INFO - 获取专家模型预测...
+2025-11-11 22:08:57,442 - __main__ - INFO - 使用设备: cuda
+2025-11-11 22:08:57,443 - __main__ - INFO - 开始完整实验流程...
+2025-11-11 22:08:57,443 - __main__ - INFO - 开始数据加载和预处理...
+2025-11-11 22:08:57,452 - src.data_preprocessing.data_loader - INFO - 正在加载数据文件: C:\Temp\Pycharm\floating_wind_platform\data\浮式风机平台.xlsx
+2025-11-11 22:08:59,538 - src.data_preprocessing.data_loader - WARNING - 列 'Wave1Elev' 发现 62 个异常值 (|Z-score| > 3.0)
+2025-11-11 22:08:59,540 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-11 22:08:59,542 - src.data_preprocessing.data_loader - WARNING - 列 'PtfmRoll' 发现 106 个异常值 (|Z-score| > 3.0)
+2025-11-11 22:08:59,544 - src.data_preprocessing.data_loader - INFO - 已使用1%和99%分位数截断处理异常值
+2025-11-11 22:08:59,550 - src.data_preprocessing.data_loader - INFO - 目标变量标准化完成，均值: -0.0002, 方差: 0.3598
+2025-11-11 22:08:59,550 - src.data_preprocessing.data_loader - INFO - 协变量标准化完成，形状: (20001, 6)
+2025-11-11 22:08:59,618 - src.data_preprocessing.data_loader - INFO - 创建序列样本完成: X形状 (19882, 96, 7), y形状 (19882, 24)
+2025-11-11 22:08:59,618 - src.data_preprocessing.data_loader - INFO - 数据划分完成:
+2025-11-11 22:08:59,618 - src.data_preprocessing.data_loader - INFO - 训练集: X(13917, 96, 7), y(13917, 24)
+2025-11-11 22:08:59,618 - src.data_preprocessing.data_loader - INFO - 验证集: X(1988, 96, 7), y(1988, 24)
+2025-11-11 22:08:59,618 - src.data_preprocessing.data_loader - INFO - 测试集: X(3977, 96, 7), y(3977, 24)
+2025-11-11 22:08:59,698 - src.data_preprocessing.data_loader - INFO - 处理后的数据已保存到 results
+2025-11-11 22:08:59,700 - __main__ - INFO - 数据预处理完成:
+2025-11-11 22:08:59,700 - __main__ - INFO - 训练集: (13917, 96, 7), (13917, 24)
+2025-11-11 22:08:59,700 - __main__ - INFO - 验证集: (1988, 96, 7), (1988, 24)
+2025-11-11 22:08:59,700 - __main__ - INFO - 测试集: (3977, 96, 7), (3977, 24)
+2025-11-11 22:08:59,700 - __main__ - INFO - 开始专家模型超参数优化...
+2025-11-11 22:08:59,709 - __main__ - INFO - 优化PatchTST超参数...
+2025-11-11 22:08:59,724 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,725 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,725 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,726 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,726 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,727 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,727 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,728 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,728 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,729 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,729 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,729 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,731 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,731 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,731 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,732 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,732 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,732 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,733 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,733 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,734 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,735 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,736 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,736 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,736 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,737 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,738 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,738 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,738 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,739 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,739 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,740 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,740 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,741 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,741 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,742 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,742 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,743 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,743 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,744 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,745 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,745 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,745 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,746 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,746 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,747 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,747 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,748 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,749 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,749 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.patchtst'
+2025-11-11 22:08:59,750 - src.utils.hyperparameter_optimization - INFO - PatchTST最佳试验: {}
+2025-11-11 22:08:59,750 - src.utils.hyperparameter_optimization - INFO - 最佳验证损失: inf
+2025-11-11 22:08:59,754 - __main__ - INFO - 优化NHITS超参数...
+2025-11-11 22:08:59,767 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,768 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,768 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,769 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,770 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,770 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,771 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,771 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,772 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,772 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,773 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,773 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,774 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,774 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,774 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,775 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,775 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,776 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,776 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,777 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,777 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,778 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,778 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,778 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,779 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,779 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,780 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,780 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,781 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,781 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,781 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,782 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,782 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,783 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,784 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,784 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,785 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,785 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,785 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,786 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,786 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,787 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,787 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,788 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,789 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,789 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,789 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,790 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,790 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,791 - src.utils.hyperparameter_optimization - ERROR - 试验失败: No module named 'src.models.nhits'
+2025-11-11 22:08:59,791 - src.utils.hyperparameter_optimization - INFO - NHITS最佳试验: {}
+2025-11-11 22:08:59,791 - src.utils.hyperparameter_optimization - INFO - 最佳验证损失: inf
+2025-11-11 22:08:59,795 - __main__ - INFO - 超参数优化完成
+2025-11-11 22:08:59,795 - __main__ - INFO - 开始训练专家模型...
+2025-11-11 22:08:59,795 - __main__ - INFO - 创建PatchTST模型...
+2025-11-11 22:08:59,810 - __main__ - INFO - 创建NHITS模型...
+2025-11-11 22:08:59,886 - __main__ - INFO - 训练PatchTST...
+2025-11-11 22:09:10,613 - models.patchtst - INFO - Epoch   1 | train_loss=0.929672 | val_loss=1.327782
+2025-11-11 22:09:19,602 - models.patchtst - INFO - Epoch   2 | train_loss=0.924051 | val_loss=1.327638
+2025-11-11 22:09:28,658 - models.patchtst - INFO - Epoch   3 | train_loss=0.923961 | val_loss=1.327898
+2025-11-11 22:09:37,887 - models.patchtst - INFO - Epoch   4 | train_loss=0.924044 | val_loss=1.327855
+2025-11-11 22:09:47,077 - models.patchtst - INFO - Epoch   5 | train_loss=0.924101 | val_loss=1.327747
+2025-11-11 22:09:56,379 - models.patchtst - INFO - Epoch   6 | train_loss=0.923939 | val_loss=1.327815
+2025-11-11 22:10:05,552 - models.patchtst - INFO - Epoch   7 | train_loss=0.923925 | val_loss=1.328093

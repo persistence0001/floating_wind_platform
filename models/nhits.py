@@ -361,7 +361,7 @@ class NHITS(nn.Module):
 class NHITSTrainer:
     """NHITS训练器"""
 
-    def __init__(self, model: NHITS, device: str = 'cuda' if torch.cuda.is_available() else 'cpu', config: dict = None):
+    def __init__(self, model: NHITS, device: str = 'cuda' if torch.cuda.is_available() else 'cpu', config: dict = None,target_scaler=None):
         self.model = model.to(device)
         self.device = device
         self.config = config
@@ -370,7 +370,9 @@ class NHITSTrainer:
             from config import load_config
             config = load_config(r'configs\config.yaml')
             self.config = config
+            self.target_scaler = target_scaler
         self.optimizer = None
+
         self.scheduler = None
         self.criterion = nn.MSELoss()
 
@@ -404,6 +406,8 @@ class NHITSTrainer:
             # 如果 DataLoader 返回 (y, ) 元组，取第一项
             #while isinstance(batch_y, (tuple, list)):
              #   batch_y = batch_y[-1]
+            if self.target_scaler is not None:
+                batch_y = batch_y * self.target_scaler.scale_[0] + self.target_scaler.mean_[0]
             loss = self.criterion(predictions.squeeze(-1), batch_y)  # 确保维度匹配
 
             loss.backward()
@@ -425,6 +429,8 @@ class NHITSTrainer:
                 batch_y = batch_y.to(self.device)
 
                 predictions, _ = self.model(batch_x)
+                if self.target_scaler is not None:  # <-- 新增
+                    batch_y = batch_y * self.target_scaler.scale_[0] + self.target_scaler.mean_[0]
                 loss = self.criterion(predictions.squeeze(-1), batch_y)  # 确保维度匹配
 
                 total_loss += loss.item()
