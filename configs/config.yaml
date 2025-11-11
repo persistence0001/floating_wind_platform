@@ -56,7 +56,12 @@ training:
   weight_decay: 1e-5  # 对应配置二.py的L2_LAMBDA
   patience: 15
   min_delta: 1e-6
-
+# 新增复合损失权重配置
+composite_loss:
+  main_loss_weight: 1.0
+  aux_loss_weight_patchtst: 0.3
+  aux_loss_weight_nhits: 0.2
+  ortho_loss_weight: 0.1
 # 5. 超参数优化配置（含配置二.py的独有参数）
 optimization:
   n_trials: 50

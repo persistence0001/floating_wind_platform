@@ -126,41 +126,8 @@ class HyperparameterOptimizer:
         Returns:
             门控网络模型
         """
-        from src.strategies.gating_network import GatingNetwork
 
-        # 超参数搜索空间
-        hidden_size = trial.suggest_categorical('hidden_size', [32, 64, 128])
-        num_layers = trial.suggest_int('num_layers', 1, 3)
-        dropout = trial.suggest_float('dropout', 0.1, 0.3)
-        learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
 
-        model = GatingNetwork(
-            input_size=1,  # 只处理目标变量
-            hidden_size=hidden_size,
-            num_layers=num_layers,
-            horizon=horizon,
-            n_experts=n_experts,
-            dropout=dropout
-        )
-
-        return model, learning_rate
-
-    def train_model(self, model: nn.Module, dataloader: TorchDataLoader, optimizer: torch.optim.Optimizer,
-                    criterion: nn.Module,  val_dataloader: Optional[TorchDataLoader] = None) -> float:
-        """
-        训练模型
-
-        Args:
-            model: 模型
-            dataloader: 训练数据加载器
-            optimizer: 优化器
-            criterion: 损失函数
-            num_epochs: 训练轮数
-            val_dataloader: 验证数据加载器
-
-        Returns:
-            最佳验证损失
-        """
         model.train()
         best_val_loss = float('inf')
         patience = int(self.config['training']['patience'])
@@ -357,6 +324,71 @@ class HyperparameterOptimizer:
 
         return study.best_trial.params
 
+    def optimize_drfn_aux_weights(self, X_train, y_train, X_val, y_val):
+        """优化UnifiedDRFN的辅助任务损失权重（复用PatchTST_Mullt的Optuna逻辑）"""
+        logger.info("开始优化DRFN的辅助任务损失权重...")
+
+        from models.unified_drfn import UnifiedDRFN
+        from src.strategies.unified_drfn import UnifiedDRFNTrainer
+
+        # 定义目标函数（复用PatchTST_Mullt的objective结构）
+        def objective(trial):
+            # 1. 定义超参数搜索空间（辅助损失权重）
+            aux_p_weight = trial.suggest_float('aux_p_weight', 0.1, 1.0, log=True)
+            aux_n_weight = trial.suggest_float('aux_n_weight', 0.1, 1.0, log=True)
+            learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
+
+            # 2. 准备模型参数
+            patchtst_params = self.config['models']['patchtst']
+            nhits_params = self.config['models']['nhits']
+            input_size = X_train.shape[1]
+            horizon = y_train.shape[1]
+            num_features = X_train.shape[2]
+
+            # 3. 初始化模型（复用UnifiedDRFN）
+            model = UnifiedDRFN(
+                patchtst_params={**patchtst_params,
+                                 'input_size': input_size,
+                                 'horizon': horizon,
+                                 'num_features': num_features},
+                nhits_params={**nhits_params,
+                              'input_size': input_size,
+                              'horizon': horizon,
+                              'num_features': num_features},
+                config=self.config
+            ).to(self.device)
+
+            # 4. 初始化训练器（UnifiedDRFNTrainer，支持动态损失权重）
+            trainer = UnifiedDRFNTrainer(
+                model=model,
+                device=self.device,
+                loss_weights={
+                    'main': 1.0,  # 主任务权重固定为1
+                    'aux_p': aux_p_weight,
+                    'aux_n': aux_n_weight
+                }
+            )
+            trainer.setup_optimizer(learning_rate=learning_rate, weight_decay=1e-5)
+
+            # 5. 训练模型（复用train方法）
+            train_loader = self._create_dataloader(X_train, y_train)
+            val_loader = self._create_dataloader(X_val, y_val, shuffle=False)
+            best_val_loss = trainer.train(
+                train_loader=train_loader,
+                val_loader=val_loader,
+                epochs=30,  # 优化时减少epochs
+                patience=5
+            )
+
+            return best_val_loss
+
+        # 运行Optuna优化（复用PatchTST_Mullt的study逻辑）
+        study = optuna.create_study(direction='minimize', study_name='DRFN_Aux_Weights')
+        study.optimize(objective, n_trials=50)  # 50次试验
+
+        logger.info(f"最优辅助权重: {study.best_params}")
+        return study.best_params
+
     def optimize_gating_network(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray,
                                 expert_models: list, params: dict = None) -> Dict:
         params = params or {}
@@ -502,11 +534,50 @@ class HyperparameterOptimizer:
 
         return study.best_trial.params
 
+    def optimize_drfn_loss_weights(self, X_train, y_train, X_val, y_val, drfn_config, patchtst_params, nhits_params):
+        """优化UnifiedDRFN的复合损失权重 (α, β, γ)"""
+        from src.strategies.unified_drfn import UnifiedDRFN, UnifiedDRFNTrainer
+
+        train_loader = self._create_dataloader(X_train, y_train)  # Assuming _create_dataloader exists
+        val_loader = self._create_dataloader(X_val, y_val, shuffle=False)
+
+        def objective(trial):
+            # 1. 定义搜索空间
+            aux_p_weight = trial.suggest_float('aux_p_weight', 1e-2, 1.0, log=True)
+            aux_n_weight = trial.suggest_float('aux_n_weight', 1e-2, 1.0, log=True)
+            ortho_weight = trial.suggest_float('ortho_weight', 1e-2, 1.0, log=True)
+            learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-3, log=True)
+
+            # 2. 实例化模型和训练器
+            model = UnifiedDRFN(patchtst_params, nhits_params, drfn_config).to(self.device)
+            loss_weights = {
+                'main': 1.0, 'aux_p': aux_p_weight,
+                'aux_n': aux_n_weight, 'ortho': ortho_weight,
+                'fft_n_amplitudes': drfn_config.get('fft_n_amplitudes', 10)
+            }
+            trainer = UnifiedDRFNTrainer(model, self.device, loss_weights)
+            trainer.setup_training(learning_rate, weight_decay=1e-5)
+
+            # 3. 运行简短训练以评估超参数
+            best_val_loss = trainer.train_model(
+                train_loader, val_loader,
+                num_epochs=self.config['optimization']['tuning_epochs'],
+                patience=5,
+                save_path=self.config['output']['results_dir']  # A temporary path
+            )
+            return best_val_loss
+
+        study = optuna.create_study(direction='minimize')
+        study.optimize(objective, n_trials=self.config['optimization'].get('n_trials_drfn', 50))
+
+        print(f"Best loss weights found: {study.best_params}")
+        return study.best_params
+
 
 def main():
     """测试超参数优化器 - 使用真实数据验证框架"""
     print("超参数优化器框架验证完成！")
-    print("注意：此版本已移除所有模拟数据，请使用真实数据进行验证")
+
 
 if __name__ == "__main__":
     main()

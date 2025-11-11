@@ -29,10 +29,13 @@ sys.path.append(str(project_root))
 from src.data_preprocessing.data_loader import DataLoader
 from models.patchtst import PatchTST, PatchTSTTrainer
 from models.nhits import NHITS, NHITSTrainer
-from src.strategies.mpa_optimizer import MPAOptimizer,StackingOptimizer
-from src.strategies.gating_network import DynamicFusionModel, DynamicFusionTrainer, GatingNetwork
-from src.evaluation.metrics import EvaluationMetrics, ModelComparison
+
+from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer
+from src.strategies.unified_drfn import UnifiedDRFN, UnifiedDRFNTrainer
 from src.utils.hyperparameter_optimization import HyperparameterOptimizer
+from src.utils.analysis import analyze_dynamic_weights
+#from src.evaluation.metrics import calculate_all_metrics,EvaluationMetrics, ModelComparison
+#from src.visualization.plots import plot_prediction_examples, plot_metrics_comparison
 
 # 配置日志
 logging.basicConfig(
@@ -91,9 +94,6 @@ class FloatingWindPlatformExperiment:
         data = self.data_loader.load_data()
 
         # 预处理数据
-
-        
-
         target_scaled, covariate_scaled, time_stamps = self.data_loader.preprocess_data()
         
         self.time_stamps = time_stamps  # 保存时间戳
@@ -135,7 +135,7 @@ class FloatingWindPlatformExperiment:
         logger.info("优化NHITS超参数...")
         nhits_params = hp_optimizer.optimize_nhits(
             self.X_train, self.y_train, self.X_val, self.y_val,
-            params=self.config)                 # 把已有配置字典传进来        )
+            params=self.config)                 # 把已有配置字典传进来
 
         # 保存优化结果
         self.optimal_params = {
@@ -161,8 +161,7 @@ class FloatingWindPlatformExperiment:
         )
 
     def train_expert_models(self, use_optimized_params: bool = True,
-                            quick_mode: bool = False,
-                            quick_epochs: Optional[int] = None):
+                            quick_mode: bool = False, quick_epochs: int = None):
 
         """训练专家模型
 
@@ -254,9 +253,61 @@ class FloatingWindPlatformExperiment:
 
         return self.expert_models
 
+
+    def train_unified_drfn(self):
+        """训练统一端到端DRFN模型"""
+        logger.info("开始训练UnifiedDRFN模型...")
+
+        # 获取专家模型参数
+        patchtst_params = self.optimal_params.get('patchtst', self.config['models']['patchtst'])
+        nhits_params = self.optimal_params.get('nhits', self.config['models']['nhits'])
+
+        # 初始化模型
+        self.unified_drfn = UnifiedDRFN(
+            patchtst_params={**patchtst_params,
+                             'input_size': self.X_train.shape[1],
+                             'horizon': self.config['data']['horizon'],
+                             'num_features': self.config['data']['num_features']},
+            nhits_params={**nhits_params,
+                          'input_size': self.X_train.shape[1],
+                          'horizon': self.config['data']['horizon'],
+                          'num_features': self.config['data']['num_features']},
+            config=self.config
+        ).to(self.device)
+
+        # 初始化训练器
+        self.drfn_trainer = UnifiedDRFNTrainer(
+            model=self.unified_drfn,
+            expert_models=[],  # 端到端模型内部包含专家，无需外部传入
+            device=self.device
+        )
+        self.drfn_trainer.setup_training(
+            learning_rate=self.config['models']['drfn'].get('learning_rate', 1e-3),
+            weight_decay=self.config['training'].get('weight_decay', 1e-5)
+        )
+
+        # 准备辅助任务目标
+        train_loader = self._create_dataloader(self.X_train, self.y_train)
+        val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
+
+        # 训练模型
+        self.drfn_trainer.train_model(
+            train_loader,
+            val_loader,
+            num_epochs=self.config['training']['num_epochs'],
+            patience=self.config['training']['patience']
+        )
+
+        # 保存模型
+        self.drfn_trainer.save_model(f"{self.results_dir}/unified_drfn_model.pth")
+        logger.info("UnifiedDRFN模型训练完成")
+
+
     def get_expert_predictions(self):
         """获取专家模型在测试集上的预测"""
         logger.info("获取专家模型预测...")
+        self.expert_preds = {'val': {}, 'test': {}}
+        val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
 
         test_loader = self._create_dataloader(self.X_test, self.y_test, shuffle=False)
 
@@ -411,8 +462,10 @@ class FloatingWindPlatformExperiment:
 
         return self.strategy_b_results
 
+    """
+
     def implement_strategy_c(self):
-        """实现策略C：动态门控网络"""
+        
         logger.info("实现策略C：动态门控网络...")
 
         # 获取专家模型
@@ -444,7 +497,7 @@ class FloatingWindPlatformExperiment:
         )
 
         # 创建训练器
-        trainer = DynamicFusionTrainer(
+        trainer = UnifiedDRFNTrainer(
             model=dynamic_model,
             expert_models=[patchtst_model, nhits_model],
             device=self.device
@@ -475,25 +528,117 @@ class FloatingWindPlatformExperiment:
 
         # 反标准化预测结果
         predictions_original = self._inverse_transform_predictions(predictions)
+        strategy_c_metrics = EvaluationMetrics.calculate_all_metrics(
+            self.y_test, predictions  # 使用标准化数据计算指标
+        )
 
-        # 保存结果
+        # 保存结果（统一格式，仅保留必要字段）
         self.strategy_c_results = {
-            'model': dynamic_model,
-            'trainer': trainer,
-            'predictions': predictions,
-            'predictions_original': predictions_original,
-            'coefficients': coefficients
+            'pred': predictions,  # 与策略A/B统一：标准化预测结果
+            'pred_original': predictions_original,  # 新增：反标准化结果（便于可视化）
+            'metrics': strategy_c_metrics,  # 新增：与策略A/B统一的评估指标
+            'coefficients': coefficients  # 必要：权重分析依赖
         }
 
-        # 保存模型和结果
-        trainer.save_model(f"{self.results_dir}/dynamic_fusion_model.pth")
-        np.save(f"{self.results_dir}/strategy_c_predictions_scaled.npy", predictions)
+        # 新增权重分析
+        self.analyze_gating_weights(coefficients_history)
+        logger.info("策略C（动态门控网络）执行完成")
+
+        # C:\Temp\Pcharm\floating_wind_platform\main.py (Line ~461)
+        """
+    def implement_strategy_c(self, optimize_loss_weights: bool = True):
+        """
+        实现策略C：动态门控网络 (端到端训练重构版)
+        """
+        logger.info("=" * 20 + " 开始执行策略C: 端到端动态融合网络 " + "=" * 20)
+
+        # 1. 准备模型参数
+        logger.info("策略C - 步骤1: 准备模型配置...")
+        input_size, num_features = self.X_train.shape[1], self.X_train.shape[2]
+        horizon = self.y_train.shape[1]
+
+        # 从主config加载专家和DRFN的配置
+        patchtst_config = self.config['models']['patchtst']
+        nhits_config = self.config['models']['nhits']
+        drfn_config = self.config['models']['drfn']
+
+        patchtst_params = {**patchtst_config, 'input_size': input_size, 'horizon': horizon,
+                           'num_features': num_features}
+        nhits_params = {**nhits_config, 'input_size': input_size, 'horizon': horizon, 'num_features': num_features}
+        drfn_config_full = {**drfn_config, 'horizon': horizon, 'num_features': num_features}
+
+        # 2. 优化损失权重
+        if optimize_loss_weights:
+            logger.info("策略C - 步骤2: 使用 Optuna 优化复合损失权重...")
+            hp_optimizer = HyperparameterOptimizer(self.config_path)
+            best_params = hp_optimizer.optimize_drfn_loss_weights(
+                self.X_train, self.y_train, self.X_val, self.y_val,
+                drfn_config_full, patchtst_params, nhits_params
+            )
+            loss_weights = {'main': 1.0, **{k: v for k, v in best_params.items() if 'weight' in k}}
+            learning_rate = best_params.get('learning_rate', drfn_config['learning_rate'])
+            # 保存最优权重到结果目录
+            with open(os.path.join(self.results_dir, "strategy_c_best_loss_weights.yaml"), 'w') as f:
+                yaml.dump(best_params, f)
+        else:
+            logger.info("策略C - 步骤2: 跳过权重优化，使用配置文件中的默认值。")
+            loss_weights = drfn_config.get('loss_weights', {'main': 1.0, 'aux_p': 0.1, 'aux_n': 0.1, 'ortho': 0.1})
+            learning_rate = drfn_config['learning_rate']
+
+        # 3. 最终训练
+        logger.info(f"策略C - 步骤3: 开始最终模型训练... (学习率={learning_rate:.6f})")
+        # 确保从正确的路径导入新模块
+
+
+        model = UnifiedDRFN(patchtst_params, nhits_params, drfn_config_full)
+        trainer = UnifiedDRFNTrainer(model, self.device, loss_weights, self.config)
+        trainer.setup_training(learning_rate, self.config['training']['weight_decay'])
+
+        train_loader = self._create_dataloader(self.X_train, self.y_train)
+        val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
+
+        trainer.train_model(
+            train_loader, val_loader,
+            self.config['training']['num_epochs'],
+            self.config['training']['patience'],
+            self.results_dir  # 传递保存路径
+        )
+        logger.info("策略C - 模型训练完成。")
+
+        # 4. 在测试集上评估
+        logger.info("策略C - 步骤4: 在测试集上评估并进行深度分析...")
+        test_loader = self._create_dataloader(self.X_test, self.y_test, shuffle=False)
+        preds_scaled, coeffs, trues_scaled, x_test = trainer.evaluate(test_loader)
+
+        # 结果需要是 [n_samples, horizon]
+        preds_scaled = preds_scaled.squeeze(-1)
+
+        # 5. 反标准化并保存结果
+        predictions_original = self._inverse_transform_predictions(preds_scaled)
+        preds_final = self.scaler_y.inverse_transform(preds_scaled.squeeze(-1))
+        trues_final = self.scaler_y.inverse_transform(trues_scaled)
+
+        self.strategy_c_results = {
+            'predictions': preds_scaled,
+            'predictions_original': predictions_original,
+            'coefficients': coeffs
+        }
+
+        np.save(f"{self.results_dir}/strategy_c_predictions_scaled.npy", preds_scaled)
         np.save(f"{self.results_dir}/strategy_c_predictions_original.npy", predictions_original)
-        np.save(f"{self.results_dir}/strategy_c_coefficients.npy", coefficients)
+        np.save(f"{self.results_dir}/strategy_c_coefficients.npy", coeffs)
 
-        logger.info("策略C完成")
+        # 6. 运行增强的权重分析
+        from src.utils.analysis import analyze_dynamic_weights
+        analysis_prefix = os.path.join(self.visualization_dir, "strategy_c_weights")
+        # 确保传递正确的特征名称
+        feature_names = [self.config['data']['target_col']] + self.config['data']['covariate_cols']
+        analyze_dynamic_weights(coeffs, x_test, feature_names, analysis_prefix)
 
+        logger.info("策略C执行完成。")
         return self.strategy_c_results
+
+
 
     def calculate_metrics(self, predictions, true_values, is_scaled=True):
         """计算评估指标"""
@@ -733,126 +878,6 @@ class FloatingWindPlatformExperiment:
             plt.savefig(f"{self.visualization_dir}/dynamic_coefficients_example_{idx}.png")
             plt.close()
 
-        def implement_strategy_a_quick(self, max_iterations: int = 20):
-            """实现策略A的快速模式：静态优化权重（减少MPA迭代次数）"""
-        logger.info(f"实现策略A快速模式：静态优化权重（max_iterations={max_iterations}）...")
-
-        # 准备数据
-        patchtst_pred = self.expert_predictions['patchtst']
-        nhits_pred = self.expert_predictions['nhits']
-
-        # 合并预测 [n_samples, horizon, n_experts]
-        expert_preds_combined = np.stack([patchtst_pred, nhits_pred], axis=2)
-
-        # 使用验证集来优化权重
-        val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
-
-        val_predictions = {}
-        for name, expert_data in self.expert_models.items():
-            trainer = expert_data['trainer']
-            predictions = trainer.predict(val_loader)
-            val_predictions[name] = predictions
-
-        val_expert_preds_combined = np.stack([val_predictions['patchtst'], val_predictions['nhits']], axis=2)
-
-        # 使用MPA优化权重（快速模式，减少迭代次数）
-        mpa_config = self.config['mpa'].copy()
-        mpa_config['max_iterations'] = max_iterations  # 使用快速模式的迭代次数
-
-        optimizer = StaticWeightOptimizer(mpa_config)
-
-        optimal_weights, best_score = optimizer.optimize_weights(
-            val_expert_preds_combined, self.y_val
-        )
-
-        # 在测试集上应用权重
-        strategy_a_predictions = np.zeros_like(self.y_test)
-        for i, weight in enumerate(optimal_weights):
-            strategy_a_predictions += weight * expert_preds_combined[:, :, i]
-
-        # 反标准化预测结果
-        strategy_a_predictions_original = self._inverse_transform_predictions(strategy_a_predictions)
-
-        # 保存结果
-        self.strategy_a_results = {
-            'predictions': strategy_a_predictions,
-            'predictions_original': strategy_a_predictions_original,
-            'weights': optimal_weights,
-            'validation_score': best_score
-        }
-
-        np.save(f"{self.results_dir}/strategy_a_predictions_scaled.npy", strategy_a_predictions)
-        np.save(f"{self.results_dir}/strategy_a_predictions_original.npy", strategy_a_predictions_original)
-        np.save(f"{self.results_dir}/strategy_a_weights.npy", optimal_weights)
-
-        logger.info(f"策略A快速模式完成 - 最优权重: {optimal_weights}, 验证集RMSE: {best_score:.6f}")
-
-        return self.strategy_a_results
-
-        def implement_strategy_b_quick(self, max_iterations: int = 20):
-            """实现策略B的快速模式：广义线性融合（减少MPA迭代次数）"""
-            logger.info(f"实现策略B快速模式：广义线性融合（max_iterations={max_iterations}）...")
-
-            # 准备数据
-            patchtst_pred = self.expert_predictions['patchtst']
-            nhits_pred = self.expert_predictions['nhits']
-
-            # 合并预测 [n_samples, horizon, n_experts]
-            expert_preds_combined = np.stack([patchtst_pred, nhits_pred], axis=2)
-
-            # 使用验证集来优化系数
-            val_loader = self._create_dataloader(self.X_val, self.y_val, shuffle=False)
-
-            val_predictions = {}
-            for name, expert_data in self.expert_models.items():
-                trainer = expert_data['trainer']
-                predictions = trainer.predict(val_loader)
-                val_predictions[name] = predictions
-
-            val_expert_preds_combined = np.stack([val_predictions['patchtst'], val_predictions['nhits']], axis=2)
-
-            # 使用MPA优化系数（快速模式，减少迭代次数）
-            mpa_config = self.config['mpa'].copy()
-            mpa_config['max_iterations'] = max_iterations  # 使用快速模式的迭代次数
-
-            optimizer = StackingOptimizer(mpa_config)
-
-            optimal_coefficients, best_score = optimizer.optimize_coefficients(
-                val_expert_preds_combined, self.y_val
-            )
-
-            # 在测试集上应用系数
-            # 系数包括截距项和权重
-            w0 = optimal_coefficients[0]
-            weights = optimal_coefficients[1:]
-
-            strategy_b_predictions = np.full_like(self.y_test, w0)
-            for i, weight in enumerate(weights):
-                strategy_b_predictions += weight * expert_preds_combined[:, :, i]
-
-            # 反标准化预测结果
-            strategy_b_predictions_original = self._inverse_transform_predictions(strategy_b_predictions)
-
-            # 保存结果
-            self.strategy_b_results = {
-                'predictions': strategy_b_predictions,
-                'predictions_original': strategy_b_predictions_original,
-                'coefficients': optimal_coefficients,
-                'validation_score': best_score
-            }
-
-            np.save(f"{self.results_dir}/strategy_b_predictions_scaled.npy", strategy_b_predictions)
-            np.save(f"{self.results_dir}/strategy_b_predictions_original.npy", strategy_b_predictions_original)
-            np.save(f"{self.results_dir}/strategy_b_coefficients.npy", optimal_coefficients)
-
-            logger.info(f"策略B快速模式完成 - 最优系数: {optimal_coefficients}, 验证集RMSE: {best_score:.6f}")
-
-            return self.strategy_b_results
-
-
-
-
-
 
 
 
@@ -894,3 +919,7 @@ class FloatingWindPlatformExperiment:
 
         logger.info("完整实验流程完成")
         return self.results
+
+if __name__ == '__main__':
+    experiment = FloatingWindPlatformExperiment()
+    experiment.run_complete_experiment(optimize_hyperparameters=True)

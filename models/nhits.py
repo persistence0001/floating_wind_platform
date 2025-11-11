@@ -296,8 +296,13 @@ class NHITS(nn.Module):
 
         # 最终融合层
         self.fusion = nn.Linear(horizon * num_stacks, horizon)
+        # 新增: 辅助任务头 (统计特征任务)
+        # 辅助任务是预测输入序列目标变量的4个统计特征 (mean, std, max, min)
+        # 输入是投影后的序列，维度为 input_size
+        self.aux_task_head = nn.Linear(input_size, 4)
 
         self._init_weights()
+
 
     def _init_weights(self):
         """初始化权重"""
@@ -305,15 +310,17 @@ class NHITS(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_aux: bool = False) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """
-        前向传播
+        前向传播 (支持返回辅助任务输出)
 
         Args:
             x: 输入张量 [batch_size, input_size, num_features]
+            return_aux: 如果为True，则同时返回主任务和辅助任务的预测
 
         Returns:
-            预测结果 [batch_size, horizon]
+            - 主任务预测 [batch_size, horizon, 1]
+            - (如果 return_aux=True) 辅助任务预测 [batch_size, 4]
         """
         batch_size = x.shape[0]
 
@@ -323,19 +330,32 @@ class NHITS(nn.Module):
         # 所有堆栈的预测结果
         stack_predictions = []
 
+        # 残差连接的输入是投影后的 x_projected
+        residuals = x_projected.clone()
+
         for stack in self.stacks:
-            forecast, _ = stack(x_projected)
+            forecast, backcast = stack(residuals)  # stack now returns backcast
+            residuals = residuals - backcast
             stack_predictions.append(forecast)
 
         # 融合所有堆栈的预测
         if len(stack_predictions) > 1:
             stacked_predictions = torch.stack(stack_predictions, dim=2)  # [batch_size, horizon, num_stacks]
             flattened = stacked_predictions.reshape(batch_size, -1)  # [batch_size, horizon * num_stacks]
-            final_prediction = self.fusion(flattened)  # [batch_size, horizon]
+            y_pred_main = self.fusion(flattened)  # [batch_size, horizon]
         else:
-            final_prediction = stack_predictions[0]
+            y_pred_main = stack_predictions[0]
 
-        return final_prediction
+        # 统一输出格式为 [batch_size, horizon, 1]
+        y_pred_main = y_pred_main.unsqueeze(-1)
+
+        if not return_aux:
+            return y_pred_main, None
+
+        # 辅助任务预测 (使用初始的投影后序列)
+        y_pred_aux = self.aux_task_head(x_projected)  # [batch_size, 4]
+
+        return y_pred_main, y_pred_aux
 
 
 class NHITSTrainer:
@@ -345,6 +365,11 @@ class NHITSTrainer:
         self.model = model.to(device)
         self.device = device
         self.config = config
+        # 若外部未传入 config，则按默认路径加载
+        if config is None:
+            from config import load_config
+            config = load_config(r'configs\config.yaml')
+            self.config = config
         self.optimizer = None
         self.scheduler = None
         self.criterion = nn.MSELoss()
@@ -375,8 +400,11 @@ class NHITSTrainer:
 
             self.optimizer.zero_grad()
 
-            predictions = self.model(batch_x)
-            loss = self.criterion(predictions, batch_y)
+            predictions, _  = self.model(batch_x)
+            # 如果 DataLoader 返回 (y, ) 元组，取第一项
+            #while isinstance(batch_y, (tuple, list)):
+             #   batch_y = batch_y[-1]
+            loss = self.criterion(predictions.squeeze(-1), batch_y)  # 确保维度匹配
 
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
@@ -396,8 +424,8 @@ class NHITSTrainer:
                 batch_x = batch_x.to(self.device)
                 batch_y = batch_y.to(self.device)
 
-                predictions = self.model(batch_x)
-                loss = self.criterion(predictions, batch_y)
+                predictions, _ = self.model(batch_x)
+                loss = self.criterion(predictions.squeeze(-1), batch_y)  # 确保维度匹配
 
                 total_loss += loss.item()
 

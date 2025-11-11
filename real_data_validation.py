@@ -20,7 +20,7 @@ from src.data_preprocessing.data_loader import DataLoader
 from models.patchtst import PatchTST
 from models.nhits import NHITS
 from src.strategies.mpa_optimizer import MPAOptimizer, StackingOptimizer
-from src.strategies.gating_network import GatingNetwork
+
 from src.evaluation.metrics import EvaluationMetrics
 from src.visualization.plots import VisualizationEngine
 

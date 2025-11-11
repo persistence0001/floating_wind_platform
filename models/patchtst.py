@@ -169,8 +169,16 @@ class PatchTST(nn.Module):
 
         # 预测头
         self.prediction_head = PredictionHead(d_model, horizon, head_dropout)
+        # 新增: 辅助任务头 (FFT 任务)
+        # 辅助任务是预测输入序列目标变量的统计特征，这里用一个简单的线性层实现
+        # 输入维度是d_model，因为它接收和主任务头一样的池化后特征
+        # 输出维度是10，因为设计辅助任务为预测10个最大傅里叶振幅
+        self.fft_n_amplitudes = 10
+        self.aux_task_head = nn.Linear(d_model, self.fft_n_amplitudes)
 
         self._init_weights()
+
+
 
     def _init_weights(self):
         """初始化权重"""
@@ -178,15 +186,17 @@ class PatchTST(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_aux: bool = False) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """
-        前向传播
+        前向传播 (支持返回辅助任务输出)
 
         Args:
             x: 输入张量 [batch_size, input_size, num_features]
+            return_aux: 如果为True，则同时返回主任务和辅助任务的预测
 
         Returns:
-            预测结果 [batch_size, horizon]
+            - 主任务预测 [batch_size, horizon, 1]
+            - (如果 return_aux=True) 辅助任务预测 [batch_size, 10]
         """
         batch_size = x.shape[0]
 
@@ -199,10 +209,21 @@ class PatchTST(nn.Module):
         # Transformer编码
         encoded = self.encoder(patches)  # [batch_size, num_patches, d_model]
 
-        # 预测
-        predictions = self.prediction_head(encoded)  # [batch_size, horizon]
+        # 使用全局平均池化作为两个头的共享特征
+        pooled_features = torch.mean(encoded, dim=1)  # [batch_size, d_model]
 
-        return predictions
+        # 主任务预测
+        y_pred_main = self.prediction_head(encoded)  # [batch_size, horizon]
+        # 统一输出格式为 [batch_size, horizon, 1]
+        y_pred_main = y_pred_main.unsqueeze(-1)
+
+        if not return_aux:
+            return y_pred_main, None
+
+        # 辅助任务预测
+        y_pred_aux = self.aux_task_head(pooled_features)  # [batch_size, 10]
+
+        return y_pred_main, y_pred_aux
 
 
 class PatchTSTTrainer:
@@ -211,7 +232,13 @@ class PatchTSTTrainer:
     def __init__(self, model: PatchTST, device: str = 'cuda' if torch.cuda.is_available() else 'cpu', config: dict = None):
         self.model = model.to(device)
         self.device = device
+
+
+        if config is None:
+            from config import load_config
+            config = load_config(r'configs\config.yaml')  # 确保 dict 对象
         self.config = config
+
         self.optimizer = None
         self.scheduler = None
         self.criterion = nn.MSELoss()
@@ -242,8 +269,17 @@ class PatchTSTTrainer:
 
             self.optimizer.zero_grad()
 
-            predictions = self.model(batch_x)
-            loss = self.criterion(predictions, batch_y)
+            predictions, _  = self.model(batch_x)
+            # 如果 DataLoader 返回 (y, ) 元组，取第一项
+            #while isinstance(batch_y, (tuple, list)):
+             #   batch_y = batch_y[-1]
+            # self.model.forward() 现在返回一个元组 (y_pred_main, y_pred_aux)
+            # 在独立训练时，我们只关心主任务的预测
+            predictions_tuple = self.model(batch_x, return_aux=False)
+            predictions_main = predictions_tuple[0]  # 显式地取第一个元素
+
+            loss = self.criterion(predictions_main.squeeze(-1), batch_y)  # 使用主任务预测计算损失, 并确保维度匹配
+            #loss = self.criterion(predictions, batch_y)
 
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
@@ -263,8 +299,11 @@ class PatchTSTTrainer:
                 batch_x = batch_x.to(self.device)
                 batch_y = batch_y.to(self.device)
 
-                predictions = self.model(batch_x)
-                loss = self.criterion(predictions, batch_y)
+                predictions_tuple = self.model(batch_x, return_aux=False)
+                predictions_main = predictions_tuple[0]  # 显式地取第一个元素
+
+                loss = self.criterion(predictions_main.squeeze(-1), batch_y)  # 使用主任务预测计算损失, 并确保维度匹配
+                #loss = self.criterion(predictions, batch_y)
 
                 total_loss += loss.item()
 
@@ -322,8 +361,9 @@ class PatchTSTTrainer:
         with torch.no_grad():
             for batch_x, _ in dataloader:
                 batch_x = batch_x.to(self.device)
-                pred = self.model(batch_x)
-                predictions.append(pred.cpu().numpy())
+                predictions_tuple = self.model(batch_x, return_aux=False)
+                predictions_main = predictions_tuple[0]  # 显式地取第一个元素
+                predictions.append(predictions_main.cpu().numpy())
 
         return np.concatenate(predictions, axis=0)
 
