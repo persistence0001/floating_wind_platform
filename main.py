@@ -194,19 +194,27 @@ class FloatingWindPlatformExperiment:
 
         # 创建PatchTST模型
         logger.info("创建PatchTST模型...")
+
+        # 复制参数字典，避免修改原始数据
+        patchtst_config_clean = patchtst_config.copy()
+        # 移除learning_rate（优化器参数，模型不接受）
+        patchtst_config_clean.pop('learning_rate', None)
         patchtst_model = PatchTST(
             input_size=input_size,
             horizon=horizon,
-            num_features=num_features, **patchtst_config
+            num_features=num_features, **patchtst_config_clean
         )
 
         # 创建NHITS模型
         logger.info("创建NHITS模型...")
+        # 复制参数字典，避免修改原始数据
+        nhits_config_clean = nhits_config.copy()
+        # 移除learning_rate（优化器参数，模型不接受）
+        nhits_config_clean.pop('learning_rate', None)
         nhits_model = NHITS(
             input_size=input_size,
             horizon=horizon,
-            num_features=num_features,
-            **nhits_config
+            num_features=num_features, **nhits_config_clean
         )
 
         # 训练PatchTST

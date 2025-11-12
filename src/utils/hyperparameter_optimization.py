@@ -34,22 +34,15 @@ class HyperparameterOptimizer:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.study = None
 
-    def create_patchtst_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> nn.Module:
+    def create_patchtst_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> Tuple[
+        nn.Module, float, dict]:
         """
         创建PatchTST模型（用于超参数优化）
-
-        Args:
-            trial: Optuna试验
-            input_size: 输入序列长度
-            horizon: 预测horizon
-            num_features: 特征数量
-
-        Returns:
-            PatchTST模型
+        返回：模型 + 学习率 + 模型参数字典（保持格式一致性）
         """
-        from src.models.patchtst import PatchTST
+        from models.patchtst import PatchTST
 
-        # 超参数搜索空间
+        # 模型超参数搜索空间
         patch_len = trial.suggest_categorical('patch_len', [8, 16, 32])
         stride = trial.suggest_categorical('stride', [4, 8, 16])
         num_layers = trial.suggest_int('num_layers', 2, 4)
@@ -60,59 +53,63 @@ class HyperparameterOptimizer:
         head_dropout = trial.suggest_float('head_dropout', 0.1, 0.3)
         learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
 
+        # 模型参数字典
+        model_params = {
+            'patch_len': patch_len,
+            'stride': stride,
+            'num_layers': num_layers,
+            'n_heads': n_heads,
+            'd_model': d_model,
+            'd_ff': d_ff,
+            'dropout': dropout,
+            'head_dropout': head_dropout
+        }
+
         model = PatchTST(
             input_size=input_size,
             horizon=horizon,
-            patch_len=patch_len,
-            stride=stride,
-            num_layers=num_layers,
-            n_heads=n_heads,
-            d_model=d_model,
-            d_ff=d_ff,
-            dropout=dropout,
-            head_dropout=head_dropout,
-            num_features=num_features
+            num_features=num_features,
+            **model_params
         )
 
-        return model, learning_rate
+        return model, learning_rate, model_params
 
-    def create_nhits_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> Tuple[nn.Module, float]:
+    def create_nhits_model(self, trial: optuna.Trial, input_size: int, horizon: int, num_features: int) -> Tuple[
+        nn.Module, float, dict]:
         """
         创建NHITS模型（用于超参数优化）
-
-        Args:
-            trial: Optuna试验
-            input_size: 输入序列长度
-            horizon: 预测horizon
-            num_features: 特征数量
-
-        Returns:
-            NHITS模型
+        返回：模型 + 学习率 + 合并后的模型参数字典（含列表格式的num_blocks/num_layers）
         """
-        from src.models.nhits import NHITS
+        from models.nhits import NHITS
 
-        # 超参数搜索空间
+        # 模型超参数搜索空间
         num_stacks = trial.suggest_int('num_stacks', 2, 4)
         num_blocks = [trial.suggest_int(f'num_blocks_{i}', 1, 3) for i in range(num_stacks)]
         num_layers = [trial.suggest_int(f'num_layers_{i}', 1, 3) for i in range(num_stacks)]
-        mlp_units = [trial.suggest_categorical('mlp_units', [[256, 256], [512, 512], [1024, 512]])]
+        mlp_units = trial.suggest_categorical('mlp_units', [[256, 256], [512, 512], [1024, 512]])
         pooling_sizes = [trial.suggest_categorical(f'pooling_size_{i}', [4, 8, 16]) for i in range(num_stacks)]
         dropout = trial.suggest_float('dropout', 0.1, 0.3)
         learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
 
+        # 合并后的模型参数字典（符合NHITS __init__要求）
+        model_params = {
+            'num_stacks': num_stacks,
+            'num_blocks': num_blocks,
+            'num_layers': num_layers,
+            'mlp_units': mlp_units,
+            'pooling_sizes': pooling_sizes,
+            'dropout': dropout
+        }
+
         model = NHITS(
             input_size=input_size,
             horizon=horizon,
-            num_stacks=num_stacks,
-            num_blocks=num_blocks,
-            num_layers=num_layers,
-            mlp_units=mlp_units,
-            pooling_sizes=pooling_sizes,
-            dropout=dropout,
-            num_features=num_features
+            num_features=num_features,
+            **model_params
         )
 
-        return model, learning_rate
+        # 返回模型、学习率、合并后的参数字典
+        return model, learning_rate, model_params
 
     def create_gating_network(self, trial: optuna.Trial, horizon: int, n_experts: int) -> nn.Module:
         """
@@ -213,11 +210,7 @@ class HyperparameterOptimizer:
         _, horizon = y_train.shape
 
         # 创建数据加载器
-        train_dataset = TorchDataLoader(
-            TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
-            batch_size=params.get('batch_size', self.config['training']['batch_size']),
-            shuffle=True
-        )
+        train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train))
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
 
@@ -229,18 +222,24 @@ class HyperparameterOptimizer:
         def objective(trial: optuna.Trial) -> float:
             """目标函数"""
             try:
-                # 创建模型
-                model, learning_rate = self.create_patchtst_model(trial, input_size, horizon, num_features)
+                # 创建模型（获取参数字典）
+                model, learning_rate, model_params = self.create_patchtst_model(trial, input_size, horizon,
+                                                                                num_features)
                 model = model.to(self.device)
 
                 # 设置优化器和损失函数
-                optimizer = torch.optim.AdamW(model.parameters(), lr=params['learning_rate'],
-                                              weight_decay=params.get('weight_decay', self.config['training']['weight_decay']))
+                optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate,
+                                              weight_decay=params.get('weight_decay',
+                                                                      self.config['training']['weight_decay']))
                 criterion = nn.MSELoss()
 
                 # 训练模型
-                num_epochs = int(self.config['optimization']['tuning_epochs']) # 超参数优化时使用较少的epoch
+                num_epochs = int(self.config['optimization']['tuning_epochs'])
                 val_loss = self.train_model(model, train_loader, optimizer, criterion, num_epochs, val_loader)
+
+                # 保存参数字典和学习率
+                trial.set_user_attr('model_params', model_params)
+                trial.set_user_attr('learning_rate', learning_rate)
 
                 return val_loss
 
@@ -248,17 +247,25 @@ class HyperparameterOptimizer:
                 logger.error(f"试验失败: {str(e)}")
                 return float('inf')
 
-        # 创建研究
+        # 后续返回部分
         study = optuna.create_study(direction='minimize', pruner=optuna.pruners.MedianPruner())
 
         # 运行优化
         n_trials = self.config['optimization']['n_trials']
         study.optimize(objective, n_trials=n_trials, timeout=self.config['optimization']['timeout'])
 
-        logger.info(f"PatchTST最佳试验: {study.best_trial.params}")
-        logger.info(f"最佳验证损失: {study.best_value}")
+        # 后续返回部分
+        if not study.best_trial:
+            raise RuntimeError("所有PatchTST超参数优化试验均失败，请检查模型导入和训练逻辑")
 
-        return study.best_trial.params
+        best_model_params = study.best_trial.user_attrs.get('model_params', {})
+        best_learning_rate = study.best_trial.user_attrs.get('learning_rate', 0.001)
+        best_params = {**best_model_params, 'learning_rate': best_learning_rate}
+
+        logger.info(f"PatchTST最佳试验参数: {best_params}")
+        logger.info(f"最佳验证损失: {study.best_value:.6f}")
+
+        return best_params
 
     def optimize_nhits(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray, params: dict = None) -> Dict:
         params = params or {}
@@ -279,32 +286,36 @@ class HyperparameterOptimizer:
         _, horizon = y_train.shape
 
         # 创建数据加载器
-        train_dataset = TorchDataLoader(
-            TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train)),
-            batch_size=params.get('batch_size', self.config['training']['batch_size']),
-            shuffle=True
-        )
+
+        train_dataset = TensorDataset(torch.FloatTensor(X_train), torch.FloatTensor(y_train))
         val_dataset = TensorDataset(torch.FloatTensor(X_val), torch.FloatTensor(y_val))
 
-        batch_size = int(self.config['training']['batch_size'])
-        train_loader = TorchDataLoader(train_dataset, batch_size=int(batch_size), shuffle=True)
-        val_loader = TorchDataLoader(val_dataset, batch_size=int(batch_size), shuffle=False)
+        batch_size = int(params.get('batch_size', self.config['training']['batch_size']))
+        train_loader = TorchDataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = TorchDataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
 
         def objective(trial: optuna.Trial) -> float:
             """目标函数"""
             try:
-                # 创建模型
-                model, learning_rate = self.create_nhits_model(trial, input_size, horizon, num_features)
+                # 创建模型（获取合并后的参数字典）
+                model, learning_rate, model_params = self.create_nhits_model(trial, input_size, horizon, num_features)
                 model = model.to(self.device)
 
                 # 设置优化器和损失函数
-                optimizer = torch.optim.AdamW(model.parameters(), lr=params.get('learning_rate', self.config['training']['learning_rate']),
-                                              weight_decay=params.get('weight_decay', self.config['training']['weight_decay']))
+                optimizer = torch.optim.AdamW(model.parameters(), lr=float(learning_rate),
+                                              weight_decay=params.get('weight_decay',
+                                                                      self.config['training']['weight_decay']))
                 criterion = nn.MSELoss()
 
                 # 训练模型
-                num_epochs = int(self.config['training']['num_epochs'])
+                num_epochs = int(float(self.config['optimization']['tuning_epochs']))
                 val_loss = self.train_model(model, train_loader, optimizer, criterion, num_epochs, val_loader)
+
+                # 将合并后的参数字典存入trial.user_attrs，用于后续提取
+                trial.set_user_attr('model_params', model_params)
+                # 存入学习率（优化器参数）
+                trial.set_user_attr('learning_rate', learning_rate)
 
                 return val_loss
 
@@ -312,17 +323,23 @@ class HyperparameterOptimizer:
                 logger.error(f"试验失败: {str(e)}")
                 return float('inf')
 
-        # 创建研究
+        # 创建
         study = optuna.create_study(direction='minimize', pruner=optuna.pruners.MedianPruner())
 
         # 运行优化
         n_trials = self.config['optimization']['n_trials']
         study.optimize(objective, n_trials=n_trials, timeout=self.config['optimization']['timeout'])
 
-        logger.info(f"NHITS最佳试验: {study.best_trial.params}")
-        logger.info(f"最佳验证损失: {study.best_value}")
+        # 提取最佳试验的合并后参数字典和学习率
+        best_model_params = study.best_trial.user_attrs['model_params']
+        best_learning_rate = study.best_trial.user_attrs['learning_rate']
+        # 合并模型参数和学习率（学习率用于后续优化器）
+        best_params = {**best_model_params, 'learning_rate': best_learning_rate}
 
-        return study.best_trial.params
+        logger.info(f"NHITS最佳试验参数: {best_params}")
+        logger.info(f"最佳验证损失: {study.best_value:.6f}")
+
+        return best_params
 
     def optimize_drfn_aux_weights(self, X_train, y_train, X_val, y_val):
         """优化UnifiedDRFN的辅助任务损失权重（复用PatchTST_Mullt的Optuna逻辑）"""

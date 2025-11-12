@@ -269,7 +269,7 @@ class PatchTSTTrainer:
 
             self.optimizer.zero_grad()
 
-            predictions, _  = self.model(batch_x)
+            predictions, _ = self.model(batch_x)
             # 如果 DataLoader 返回 (y, ) 元组，取第一项
             #while isinstance(batch_y, (tuple, list)):
              #   batch_y = batch_y[-1]
@@ -299,8 +299,10 @@ class PatchTSTTrainer:
                 batch_x = batch_x.to(self.device)
                 batch_y = batch_y.to(self.device)
 
+
                 predictions_tuple = self.model(batch_x, return_aux=False)
                 predictions_main = predictions_tuple[0]  # 显式地取第一个元素
+                predictions, _ = self.model(batch_x)
 
                 loss = self.criterion(predictions_main.squeeze(-1), batch_y)  # 使用主任务预测计算损失, 并确保维度匹配
                 #loss = self.criterion(predictions, batch_y)
